@@ -1,0 +1,12 @@
+[submodule "fresa"]
+	path = fresa
+	url = git@github.com:josekoalas/fresa.git
+[submodule "deps/imgui"]
+	path = deps/imgui
+	url = git@github.com:josekoalas/imgui.git
+[submodule "deps/vma"]
+	path = deps/vma
+	url = git@github.com:GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git
+[submodule "deps/stb"]
+	path = deps/stb
+	url = git@github.com:josekoalas/stb.git
