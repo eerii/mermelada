@@ -1,15 +1,24 @@
-//project verse, 2017-2021
+//project fresa, 2017-2022
 //by jose pazos perez
 //all rights reserved uwu
 
 #pragma once
 
-#include "dtypes.h"
 #include <variant>
 
 namespace Fresa::Component
 {
-    using ComponentType = std::variant<>;
+    struct Test {
+        Serialize(Test, i, j);
+        int i;
+        float j;
+    };
 
-    static const std::vector<str> component_names = {};
+    struct Other {
+        Serialize(Other, a, b);
+        int a;
+        float b;
+    };
+    
+    using ComponentType = std::variant<Test, Other>;
 }

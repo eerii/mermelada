@@ -6,7 +6,7 @@
 	url = git@github.com:josekoalas/imgui.git
 [submodule "deps/vma"]
 	path = deps/vma
-	url = git@github.com:GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git
+	url = git@github.com:josekoalas/VulkanMemoryAllocator.git
 [submodule "deps/stb"]
 	path = deps/stb
 	url = git@github.com:josekoalas/stb.git

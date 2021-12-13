@@ -1,18 +1,24 @@
-//project verse, 2017-2021
+//project verse, 2017-2022
 //by jose pazos perez
-//all rights reserved uwu
+//licensed under GPLv3
 
 #pragma once
 
-#include "component_list.h"
+#include "scene.h"
+#include "log.h"
 
 namespace Fresa::System
 {
-    static inline void physicsUpdateSystems() {
+    struct SomeSystem : PhysicsUpdate<SomeSystem, PRIORITY_MOVEMENT>, RenderUpdate<SomeSystem> {
+        inline static void update() {
+            Scene& s = scene_list.at(active_scene);
+            for (EntityID e : SceneView<Component::Test>(s)) {
+                //log::info("%d %s", e, s.getName(e).c_str());
+            }
+        }
         
-    };
-
-    static inline void renderUpdateSystems() {
-        
+        inline static void render() {
+            
+        }
     };
 }

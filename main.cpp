@@ -1,15 +1,14 @@
-//
-//  main.cpp
-//  aguacate
-//
-//  Created by José on 9/12/21.
-//
+//project verse, 2017-2022
+//by jose pazos perez
+//all rights reserved uwu
 
 #include "log.h"
 #include "game.h"
-#include "config.h"
-#include "ftime.h"
+#include "scene.h"
+#include "f_time.h"
 #include "r_graphics.h"
+
+#include "system_list.h"
 
 using namespace Fresa;
 
@@ -22,40 +21,12 @@ void game_loop_emscripten() {
 int main(int argc, const char * argv[]) {
     log::debug("Starting main");
     
-    //TODO: REMOVE
-    Config config = {
-        .resolution = Vec2(256, 180),
-        .window_size = Vec2(1024, 720),
-        .render_scale = 4,
-        
-        .timestep = 10.0,
-        .game_speed = 1.0f,
-        
-        .use_grayscale = false,
-        .use_light = true,
-        .palette_index = 1,
-        .num_palettes = 9,
-        .background_color = {0.0, 0.0, 0.0, 1.0},
-        
-        .enable_lookahead = true,
-        .enable_smooth_panning = true,
-        .use_subpixel_cam = true,
-        
-        .gravity = 800,
-        .gravity_dir = Vec2<float>(0, 1),
-        
-        .player_loses_light = false,
-    };
-    
     //: Initialize game
-    bool running = Game::init(config);
-    
-    //: Register components
-    Component::registerComponents();
+    bool running = Game::init();
     
     //: Load scene
-    Scene* scene = new Scene();
-    config.active_scene = scene;
+    SceneID scene = registerScene();
+    active_scene = scene;
     
     //: Draw test
     Graphics::TextureID test_texture_data = Graphics::getTextureID("res/graphics/texture.png");
@@ -64,6 +35,12 @@ int main(int argc, const char * argv[]) {
     Graphics::DrawID test_draw_id_2 = Graphics::getDrawID_Cube(Graphics::SHADER_DRAW_COLOR);
     
     Clock::time_point start_time = time();
+    
+    //DELETE
+    EntityID e = scene_list.at(scene).createEntity();
+    Component::Test* c = scene_list.at(scene).addComponent<Component::Test>(e);
+    
+    Component::getID<Component::Other>();
     
     //: Update loop
 #ifdef __EMSCRIPTEN__
@@ -83,7 +60,7 @@ int main(int argc, const char * argv[]) {
         model2 = glm::rotate(model2, -t * 1.570796f, glm::vec3(0.0f, 0.0f, 1.0f));
         Graphics::draw(test_draw_id_2, model2);
         
-        running = Game::update(config);
+        running = Game::update();
     }
 #endif
     
