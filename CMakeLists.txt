@@ -19,6 +19,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # Emscripten flags
 if(EMSCRIPTEN)
     set(EMSCRIPTEN_FLAGS "${EMSCRIPTEN_FLAGS} -s MAX_WEBGL_VERSION=2")
+    set(EMSCRIPTEN_FLAGS "${EMSCRIPTEN_FLAGS} --shell-file \"${PROJECT_SOURCE_DIR}/layout.html\"")
     set(CMAKE_EXECUTABLE_SUFFIX .html)
 endif()
 # ------------------------------------------------------------------------------
@@ -28,14 +29,19 @@ endif()
 # Output directory
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin")
 
-# Delete old resources
-file(GLOB OBSOLETE_FILES "${PROJECT_SOURCE_DIR}/bin/res")
-if (OBSOLETE_FILES)
-    file (REMOVE_RECURSE ${OBSOLETE_FILES})
-endif()
+# Add resources to web bundle
+if (EMSCRIPTEN)
+set(EMSCRIPTEN_FLAGS "${EMSCRIPTEN_FLAGS} --preload-file \"${PROJECT_SOURCE_DIR}/res\"")
 
-# Add new resources
+else()
+
+# Add resources to output folder
+file(GLOB OBSOLETE_FILES "${PROJECT_SOURCE_DIR}/bin/res")
+    if (OBSOLETE_FILES)
+    file (REMOVE_RECURSE ${OBSOLETE_FILES})
+    endif()
 file(COPY "${PROJECT_SOURCE_DIR}/res" DESTINATION "${PROJECT_SOURCE_DIR}/bin")
+endif()
 # ------------------------------------------------------------------------------
 
 # INCLUDE
