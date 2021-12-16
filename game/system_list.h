@@ -5,20 +5,39 @@
 #pragma once
 
 #include "scene.h"
+
 #include "log.h"
+#include "r_graphics.h"
+#include "f_time.h"
 
 namespace Fresa::System
 {
+    inline Graphics::TextureID test_texture_data;
+    inline Graphics::DrawID test_draw_id;
+    inline Graphics::DrawID test_draw_id_2;
+    
+    inline Clock::time_point start_time = time();
+    
     struct SomeSystem : PhysicsUpdate<SomeSystem, PRIORITY_MOVEMENT>, RenderUpdate<SomeSystem> {
         inline static void update() {
-            Scene& s = scene_list.at(active_scene);
+            /*Scene& s = scene_list.at(active_scene);
             for (EntityID e : SceneView<Component::Test>(s)) {
-                //log::info("%d %s", e, s.getName(e).c_str());
-            }
+                log::info("%d %s", e, s.getName(e).c_str());
+            }*/
         }
         
         inline static void render() {
+            float t = sec(time() - start_time);
             
+            glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -1.0f + 0.8f * std::sin(t * 1.570796f)));
+            model = glm::scale(model, glm::vec3(0.6f, 0.6f, 0.6f));
+            model = glm::rotate(model, t * 1.570796f, glm::vec3(0.0f, 0.0f, 1.0f));
+            Graphics::draw(test_draw_id, model);
+            
+            glm::mat4 model2 = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 1.0f + 0.8f * std::sin(t * 1.570796f + 1.570796f)));
+            model2 = glm::scale(model2, glm::vec3(0.5f, 0.5f, 0.5f));
+            model2 = glm::rotate(model2, -t * 1.570796f, glm::vec3(0.0f, 0.0f, 1.0f));
+            Graphics::draw(test_draw_id_2, model2);
         }
     };
 }
