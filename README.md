@@ -43,6 +43,18 @@ cmake -S . -B build && cmake --build build --target fresa-vulkan
 ```
 You can rename the targets or add new ones in the `CMakeLists.txt` file.
 
+**Dependencies**
+
+Some dependencies already come with this sample repository as submodules (imGUI, SPIR-V Cross, glm, stb and VulkanMemoryAllocator). You can find them in the [deps](https://github.com/josekoalas/aguacate/tree/main/deps) folder.
+
+OpenGL should be in your system already, and CMake will search for it automatically. Vulkan is also packaged in the deps folder.
+
+The only dependency that has to be installed for this project to compile is SDL2.
+- MacOS: Install using `brew install sdl2`.
+- Debian/Ubuntu: Install using `apt-get install libsdl2-dev`.
+- Windows: Download development libraries [here](https://libsdl.org/download-2.0.php).
+- You can check the [official documentation](https://wiki.libsdl.org/Installation) for more information.
+
 **Output**
 
 After the build, the `bin` folder will contain a binary named after the target you chose and a copy of the `res` folder. You can execute the binary for the application to run. Packaging it into an app container is still being worked on.
