@@ -13,3 +13,6 @@
 [submodule "deps/glm"]
 	path = deps/glm
 	url = git@github.com:g-truc/glm.git
+[submodule "deps/spirv-cross"]
+	path = deps/spirv-cross
+	url = https://github.com/josekoalas/SPIRV-Cross

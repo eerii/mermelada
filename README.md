@@ -34,14 +34,12 @@ cmake -S . -B build && cmake --build build --target TARGET
 
 **Targets**
 
-Right now it contains two targets, one for OpenGL (`fresa-opengl`) and one for Vulkan (`fresa-vulkan`):
-```
-cmake -S . -B build && cmake --build build --target fresa-opengl
-```
-```
-cmake -S . -B build && cmake --build build --target fresa-vulkan
-```
-You can rename the targets or add new ones in the `CMakeLists.txt` file.
+Right now it contains three targets:
+-  OpenGL (`cmake -S . -B build && cmake --build build --target fresa-opengl`)
+-  Vulkan (`cmake -S . -B build && cmake --build build --target fresa-vulkan`)
+-  Web (`emcmake cmake -S . -B build && cmake --build build --target fresa-web`)
+
+You can rename the targets or add new ones in the `CMakeLists.txt` file. Building for web requires [emscripten](https://emscripten.org/docs/getting_started/downloads.html), check their site for instructions. **The web build can't render anything right now, it has an issue with shaders that is being worked on.**
 
 **Dependencies**
 

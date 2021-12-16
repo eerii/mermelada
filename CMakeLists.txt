@@ -90,10 +90,9 @@ file(GLOB_RECURSE stb_header_list CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/deps/
 include_directories("${PROJECT_SOURCE_DIR}/deps/glm")
 
 # SpirV Cross
-add_library(libspirv-cross SHARED IMPORTED)
-set_target_properties(libspirv-cross PROPERTIES IMPORTED_LOCATION "${PROJECT_SOURCE_DIR}/deps/spirv_cross/libspirv-cross.a")
+add_subdirectory("deps/spirv-cross")
 include_directories("${PROJECT_SOURCE_DIR}/deps/spirv_cross")
-link_libraries(libspirv-cross)
+link_libraries(spirv-cross-core spirv-cross-glsl spirv-cross-cpp spirv-cross-reflect spirv-cross-msl spirv-cross-hlsl spirv-cross-util spirv-cross-c)
 
 # CoreFoundation (Only MacOS)
 if (APPLE)

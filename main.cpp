@@ -10,6 +10,11 @@
 
 using namespace Fresa;
 
+#ifdef __EMSCRIPTEN__
+#include <emscripten/emscripten.h>
+void game_loop_emscripten() { Game::update(); }
+#endif
+
 int main(int argc, const char * argv[]) {
     log::debug("Starting main");
     
@@ -30,8 +35,13 @@ int main(int argc, const char * argv[]) {
     System::test_draw_id_2 = Graphics::getDrawID_Cube(Graphics::SHADER_DRAW_COLOR);
     
     //: Update loop
+    #ifdef __EMSCRIPTEN__
+    while (true)
+        emscripten_set_main_loop(game_loop_emscripten, 0, 1);
+    #else
     while (running)
         running = Game::update();
+    #endif
     
     //: Cleanup
     Game::stop();
