@@ -15,6 +15,12 @@ project(fresa VERSION 0.3
 set(CMAKE_CXX_STANDARD 20 CACHE STRING "C++ standard")
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+
+# Emscripten flags
+if(EMSCRIPTEN)
+    set(EMSCRIPTEN_FLAGS "${EMSCRIPTEN_FLAGS} -s MAX_WEBGL_VERSION=2")
+    set(CMAKE_EXECUTABLE_SUFFIX .html)
+endif()
 # ------------------------------------------------------------------------------
 
 # OUTPUT
@@ -61,14 +67,20 @@ file(GLOB_RECURSE source_list CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/fresa/*.c
 # ------------------------------------------------------------------------------
 # Preprocessor macros
 add_compile_definitions(DEBUG)
-add_compile_definitions(DISABLE_GUI)
+add_compile_definitions(DISABLE_GUI) # Not implemented yet
 
 # SDL2 (The include dir has /.. so it can be included explicitly using #include <SDL2/SDL.h>)
-find_package(SDL2 REQUIRED)
-set(SDL2_INCLUDE_DIR ${SDL2_INCLUDE_DIRS}/.. CACHE BOOL "" FORCE)
-message(STATUS "[INFO] SDL2 Include Dir ${SDL2_INCLUDE_DIR}")
-include_directories(${SDL2_INCLUDE_DIR})
-link_libraries(${SDL2_LIBRARIES})
+if(EMSCRIPTEN)
+    set(EMSCRIPTEN_FLAGS "${EMSCRIPTEN_FLAGS} -s USE_SDL=2")
+    include_directories(${SDL2_INCLUDE_DIRS})
+    link_libraries(${SDL2_LIBRARIES})
+else()
+    find_package(SDL2 REQUIRED)
+    set(SDL2_INCLUDE_DIR ${SDL2_INCLUDE_DIRS}/.. CACHE BOOL "" FORCE)
+    message(STATUS "[INFO] SDL2 Include Dir ${SDL2_INCLUDE_DIR}")
+    include_directories(${SDL2_INCLUDE_DIR})
+    link_libraries(${SDL2_LIBRARIES})
+endif()
 
 # STB
 include_directories("${PROJECT_SOURCE_DIR}/deps/stb")
@@ -84,9 +96,25 @@ include_directories("${PROJECT_SOURCE_DIR}/deps/spirv_cross")
 link_libraries(libspirv-cross)
 
 # CoreFoundation (Only MacOS)
-find_library(FoundationLib CoreFoundation)
-link_libraries(${FoundationLib})
+if (APPLE)
+    find_library(FoundationLib CoreFoundation)
+    link_libraries(${FoundationLib})
+endif()
 # ------------------------------------------------------------------------------
+
+if(EMSCRIPTEN)
+
+# WEB TARGET
+# ------------------------------------------------------------------------------
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${EMSCRIPTEN_FLAGS}")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${EMSCRIPTEN_FLAGS}")
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${EMSCRIPTEN_FLAGS}")
+
+add_executable(fresa-web main.cpp ${source_list} ${header_list} ${stb_header_list})
+target_compile_definitions(fresa-web PUBLIC USE_OPENGL)
+# ------------------------------------------------------------------------------
+
+else()
 
 # OPENGL TARGET
 # ------------------------------------------------------------------------------
@@ -107,3 +135,5 @@ target_compile_definitions(fresa-vulkan PUBLIC USE_VULKAN)
 target_include_directories(fresa-vulkan PRIVATE "${PROJECT_SOURCE_DIR}/deps/vma/include")
 target_link_libraries(fresa-vulkan PRIVATE "${PROJECT_SOURCE_DIR}/deps/vulkan.framework")
 # ------------------------------------------------------------------------------
+
+endif()
