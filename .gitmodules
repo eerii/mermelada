@@ -10,3 +10,6 @@
 [submodule "deps/stb"]
 	path = deps/stb
 	url = git@github.com:josekoalas/stb.git
+[submodule "deps/glm"]
+	path = deps/glm
+	url = git@github.com:g-truc/glm.git
