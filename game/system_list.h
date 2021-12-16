@@ -1,6 +1,6 @@
 //project verse, 2017-2022
 //by jose pazos perez
-//licensed under GPLv3
+//licensed under GPLv3 uwu
 
 #pragma once
 
@@ -12,6 +12,9 @@
 
 namespace Fresa::System
 {
+    //: Example of a hardcoded render system
+    //: This is very basic and not elegant, it will be reworked in the future
+
     inline Graphics::TextureID test_texture_data;
     inline Graphics::DrawID test_draw_id;
     inline Graphics::DrawID test_draw_id_2;

@@ -4,7 +4,7 @@
 cmake_minimum_required(VERSION 3.12...3.22)
 
 # CMake modules
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/modules")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/deps")
 
 # Project description
 project(fresa VERSION 0.3
@@ -62,7 +62,6 @@ file(GLOB_RECURSE source_list CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/fresa/*.c
 # Preprocessor macros
 add_compile_definitions(DEBUG)
 add_compile_definitions(DISABLE_GUI)
-add_compile_definitions(LOG_LEVEL=3)
 
 # SDL2 (The include dir has /.. so it can be included explicitly using #include <SDL2/SDL.h>)
 find_package(SDL2 REQUIRED)

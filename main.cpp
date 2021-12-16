@@ -1,6 +1,6 @@
 //project verse, 2017-2022
 //by jose pazos perez
-//all rights reserved uwu
+//licensed under GPLv3 uwu
 
 #include "log.h"
 #include "game.h"
@@ -9,12 +9,6 @@
 #include "system_list.h"
 
 using namespace Fresa;
-
-#ifdef __EMSCRIPTEN__
-void game_loop_emscripten() {
-    Game::update(config);
-}
-#endif
 
 int main(int argc, const char * argv[]) {
     log::debug("Starting main");
@@ -26,7 +20,7 @@ int main(int argc, const char * argv[]) {
     SceneID scene = registerScene();
     active_scene = scene;
     
-    //DELETE
+    //: Temporary test of systems and components
     EntityID e = scene_list.at(scene).createEntity();
     Component::Test* c = scene_list.at(scene).addComponent<Component::Test>(e);
     
@@ -36,13 +30,8 @@ int main(int argc, const char * argv[]) {
     System::test_draw_id_2 = Graphics::getDrawID_Cube(Graphics::SHADER_DRAW_COLOR);
     
     //: Update loop
-#ifdef __EMSCRIPTEN__
-    while (true)
-        emscripten_set_main_loop(game_loop_emscripten, 0, 1);
-#else
     while (running)
         running = Game::update();
-#endif
     
     //: Cleanup
     Game::stop();
