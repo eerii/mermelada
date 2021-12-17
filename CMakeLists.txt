@@ -111,7 +111,6 @@ endif()
 # ------------------------------------------------------------------------------
 
 if(EMSCRIPTEN)
-
 # WEB TARGET
 # ------------------------------------------------------------------------------
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${EMSCRIPTEN_FLAGS}")
@@ -121,10 +120,9 @@ set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${EMSCRIPTEN_FLAGS}")
 add_executable(fresa-web main.cpp ${source_list} ${game_source_list} ${header_list} ${game_header_list} ${stb_header_list})
 target_compile_definitions(fresa-web PUBLIC USE_OPENGL)
 # ------------------------------------------------------------------------------
-
 else()
 
-# OPENGL TARGET
+if (NOT NO_OPENGL)
 # ------------------------------------------------------------------------------
 add_executable(fresa-opengl main.cpp ${source_list} ${game_source_list} ${header_list} ${game_header_list} ${stb_header_list})
 target_compile_definitions(fresa-opengl PUBLIC USE_OPENGL)
@@ -132,8 +130,14 @@ target_compile_definitions(fresa-opengl PUBLIC USE_OPENGL)
 # Libraries
 find_package(OpenGL REQUIRED)
 target_link_libraries(fresa-opengl PUBLIC OpenGL::GL)
+if (NOT APPLE) # MacOS doesn't need this
+    find_package(GLEW REQUIRED)
+    target_link_libraries(fresa-opengl PUBLIC GLEW::GLEW)
+endif()
 # ------------------------------------------------------------------------------
+endif()
 
+if (NOT NO_VULKAN)
 # VULKAN TARGET
 # ------------------------------------------------------------------------------
 add_executable(fresa-vulkan main.cpp ${source_list} ${game_source_list} ${header_list} ${game_header_list} ${stb_header_list} "${PROJECT_SOURCE_DIR}/deps/vma/include/vk_mem_alloc.h")
@@ -144,5 +148,5 @@ find_package(Vulkan REQUIRED)
 target_link_libraries(fresa-vulkan PUBLIC Vulkan::Vulkan)
 target_include_directories(fresa-vulkan PUBLIC "${PROJECT_SOURCE_DIR}/deps/vma/include")
 # ------------------------------------------------------------------------------
-
+endif()
 endif()

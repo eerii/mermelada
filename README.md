@@ -8,7 +8,7 @@ A template repository for [fresa :strawberry:](https://github.com/josekoalas/fre
 
 Right now the project is in the **very pre-alpha** state. Only MacOS is tested, though Web, Linux and Windows support should come soon.
 
-#### Prerequisites
+### prerequisites
 
 **CMake**
 
@@ -41,9 +41,9 @@ Building for web requires [emscripten](https://emscripten.org/docs/getting_start
 
 Some dependencies already come with this sample repository as submodules (imGUI, SPIR-V Cross, glm, stb and VulkanMemoryAllocator). You can find them in the [deps](https://github.com/josekoalas/aguacate/tree/main/deps) folder. For now OpenGL is just tested on MacOS, which alredy includes the libraries, so nothing has to be done. Support for other platforms is coming.
 
-#### Build
+### build
 
-**A compiler that supports C++20 is required, the latest versions of Clang or GCC are recommended.**
+**_A compiler that supports C++20 is required, the latest versions of Clang or GCC are recommended._**
 
 1. Clone the repository
 
@@ -60,7 +60,7 @@ cd aguacate
 3. Build using CMake (replace TARGET as indicated below)
 
 ```
-cmake -S . -B build
+cmake -S . -B build FLAGS
 cmake --build build --target TARGET
 ```
 
@@ -72,6 +72,13 @@ Right now it contains three targets:
 -  Web (`emcmake cmake -S . -B build && cmake --build build --target fresa-web`)
 
 You can rename the targets or add new ones in the `CMakeLists.txt` file.
+
+**Flags**
+
+You might only be interested in creating only a Vulkan or an OpenGL build. Since `cmake` has to find all the necessary libraries in the configuration step (first command), there are two flags that can be added to remove the OpenGl/Vulkan targets alltogether.
+- Don't use OpenGL `cmake -S . -B build -DNO_OPENGL=1`
+- Don't use Vulkan `cmake -S . -B build -DNO_VULKAN=1`
+If you want to use one of them again, you will either have to run that command for the first time with the flag `-DNO_OPENGL=0`/`-DNO_VULKAN=0`, or remove the `build` directory. When building for web these don't apply, since the targets are already removed.
 
 **Output**
 
