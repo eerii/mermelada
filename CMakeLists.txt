@@ -67,6 +67,9 @@ include_directories(${header_dir_list})
 # Get the source and header files
 file(GLOB_RECURSE header_list CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/fresa/*.h")
 file(GLOB_RECURSE source_list CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/fresa/*.cpp")
+
+file(GLOB_RECURSE game_header_list CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/game/*.h")
+file(GLOB_RECURSE game_source_list CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/game/*.cpp")
 # ------------------------------------------------------------------------------
 
 # COMMON
@@ -115,7 +118,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${EMSCRIPTEN_FLAGS}")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${EMSCRIPTEN_FLAGS}")
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${EMSCRIPTEN_FLAGS}")
 
-add_executable(fresa-web main.cpp ${source_list} ${header_list} ${stb_header_list})
+add_executable(fresa-web main.cpp ${source_list} ${game_source_list} ${header_list} ${game_header_list} ${stb_header_list})
 target_compile_definitions(fresa-web PUBLIC USE_OPENGL)
 # ------------------------------------------------------------------------------
 
@@ -123,7 +126,7 @@ else()
 
 # OPENGL TARGET
 # ------------------------------------------------------------------------------
-add_executable(fresa-opengl main.cpp ${source_list} ${header_list} ${stb_header_list})
+add_executable(fresa-opengl main.cpp ${source_list} ${game_source_list} ${header_list} ${game_header_list} ${stb_header_list})
 target_compile_definitions(fresa-opengl PUBLIC USE_OPENGL)
 
 # Libraries
@@ -133,12 +136,13 @@ target_link_libraries(fresa-opengl PUBLIC OpenGL::GL)
 
 # VULKAN TARGET
 # ------------------------------------------------------------------------------
-add_executable(fresa-vulkan main.cpp ${source_list} ${header_list} ${stb_header_list} "${PROJECT_SOURCE_DIR}/deps/vma/include/vk_mem_alloc.h")
+add_executable(fresa-vulkan main.cpp ${source_list} ${game_source_list} ${header_list} ${game_header_list} ${stb_header_list} "${PROJECT_SOURCE_DIR}/deps/vma/include/vk_mem_alloc.h")
 target_compile_definitions(fresa-vulkan PUBLIC USE_VULKAN)
 
 # Libraries
-target_include_directories(fresa-vulkan PRIVATE "${PROJECT_SOURCE_DIR}/deps/vma/include")
-target_link_libraries(fresa-vulkan PRIVATE "${PROJECT_SOURCE_DIR}/deps/vulkan.framework")
+find_package(Vulkan REQUIRED)
+target_link_libraries(fresa-vulkan PUBLIC Vulkan::Vulkan)
+target_include_directories(fresa-vulkan PUBLIC "${PROJECT_SOURCE_DIR}/deps/vma/include")
 # ------------------------------------------------------------------------------
 
 endif()

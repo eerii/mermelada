@@ -4,9 +4,6 @@
 [submodule "deps/imgui"]
 	path = deps/imgui
 	url = git@github.com:josekoalas/imgui.git
-[submodule "deps/vma"]
-	path = deps/vma
-	url = git@github.com:josekoalas/VulkanMemoryAllocator.git
 [submodule "deps/stb"]
 	path = deps/stb
 	url = git@github.com:josekoalas/stb.git
@@ -15,4 +12,7 @@
 	url = git@github.com:g-truc/glm.git
 [submodule "deps/spirv-cross"]
 	path = deps/spirv-cross
-	url = https://github.com/josekoalas/SPIRV-Cross
+	url = git@github.com:josekoalas/SPIRV-Cross
+[submodule "deps/vma"]
+	path = deps/vma
+	url = git@github.com:josekoalas/VulkanMemoryAllocator.git
