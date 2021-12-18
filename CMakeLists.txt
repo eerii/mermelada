@@ -3,9 +3,6 @@
 # CMake version
 cmake_minimum_required(VERSION 3.12...3.22)
 
-# CMake modules
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/deps")
-
 # Project description
 project(fresa VERSION 0.3
               DESCRIPTION "a tiny game engine"
@@ -84,8 +81,15 @@ if(EMSCRIPTEN)
     include_directories(${SDL2_INCLUDE_DIRS})
     link_libraries(${SDL2_LIBRARIES})
 else()
-    find_package(SDL2 REQUIRED)
-    set(SDL2_INCLUDE_DIR ${SDL2_INCLUDE_DIRS}/.. CACHE BOOL "" FORCE)
+    if(WIN32)
+        # IMPORTANT: Change this on windows to point to the SDL2 downloaded library
+        # In this example I moved the folder for x86-64 to the project dir and renamed it SDL2
+        set(SDL2_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/SDL2/include")
+        set(SDL2_LIBRARIES "${PROJECT_SOURCE_DIR}/SDL2/lib/libSDL2.a")
+    else()
+        find_package(SDL2 REQUIRED)
+        set(SDL2_INCLUDE_DIR ${SDL2_INCLUDE_DIRS}/.. CACHE BOOL "" FORCE)
+    endif()
     message(STATUS "[INFO] SDL2 Include Dir ${SDL2_INCLUDE_DIR}")
     include_directories(${SDL2_INCLUDE_DIR})
     link_libraries(${SDL2_LIBRARIES})
@@ -130,7 +134,7 @@ target_compile_definitions(fresa-opengl PUBLIC USE_OPENGL)
 # Libraries
 find_package(OpenGL REQUIRED)
 target_link_libraries(fresa-opengl PUBLIC OpenGL::GL)
-if (NOT APPLE) # MacOS doesn't need this
+if(NOT APPLE) # MacOS doesn't need this
     find_package(GLEW REQUIRED)
     target_link_libraries(fresa-opengl PUBLIC GLEW::GLEW)
 endif()
