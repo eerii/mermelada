@@ -150,7 +150,7 @@ target_compile_definitions(fresa-vulkan PUBLIC USE_VULKAN)
 # Libraries
 find_package(Vulkan REQUIRED)
 target_link_libraries(fresa-vulkan PUBLIC Vulkan::Vulkan)
-target_include_directories(fresa-vulkan PUBLIC "${PROJECT_SOURCE_DIR}/deps/vma/include")
+target_include_directories(fresa-vulkan SYSTEM PUBLIC "${PROJECT_SOURCE_DIR}/deps/vma/include") # Warnings disabled
 # ------------------------------------------------------------------------------
 endif()
 endif()
