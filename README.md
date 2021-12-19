@@ -10,6 +10,10 @@ Right now the project is in the **very pre-alpha** state. Only MacOS is tested, 
 
 ### prerequisites
 
+**C++20 Compiler**
+
+The latest version of `clang` or `gcc` is recommended. On MacOS, you only need Xcode Command Line Tools. On Linux, check that the version provided is recent, using `gcc --version`. If it is not installed, for Ubuntu you can use `apt install build-essential`. On Windows, you can use `mingw64`, which is equivalent to `gcc`, or a tool like Visual Studio.
+
 **CMake**
 
 `Cmake` is our build system of choice. You can download it from the [official website](https://cmake.org/download/), which is probably the easiest way. If you are on MacOS and have homebrew installed, you can simply do `brew install cmake`. There is also a Debian/Ubuntu [repository](https://apt.kitware.com).
@@ -19,8 +23,8 @@ Right now the project is in the **very pre-alpha** state. Only MacOS is tested, 
 SDL2 handles cross platform window and input management. It needs to be installed for all non web builds. You can do so by:
 - MacOS: Install using `brew install sdl2`.
 - Debian/Ubuntu: Install using `apt install libsdl2-dev`.
-- Windows: Download development libraries [here](https://libsdl.org/download-2.0.php).
-- You can check the [official documentation](https://wiki.libsdl.org/Installation) for more information.
+- Windows: You may download the [development libraries](https://libsdl.org/download-2.0.php) or use [`vcpkg`](https://vcpkg.io/en/getting-started.html) to manage the installation. If you choose the latter, run `vcpkg install sdl2`.
+- Check the [official documentation](https://wiki.libsdl.org/Installation) for more information.
 
 **Vulkan**
 
@@ -31,7 +35,7 @@ If you are going to build for Vulkan, you need to install the Vulkan SDK Develop
 
 **OpenGL**
 
-On MacOS you don't need to do anything to build for OpenGL. For Linux, install `apt install glew-dev`. Windows is not supported yet.
+On MacOS you don't need to do anything to build for OpenGL. For Linux, install `apt install glew-dev`. On Windows download if from the [official site](http://glew.sourceforge.net) or run `vcpkg install glew`.
 
 **Web**
 
@@ -42,8 +46,6 @@ Building for web requires [emscripten](https://emscripten.org/docs/getting_start
 Some dependencies already come with this sample repository as submodules (imGUI, SPIR-V Cross, glm, stb and VulkanMemoryAllocator). You can find them in the [deps](https://github.com/josekoalas/aguacate/tree/main/deps) folder. For now OpenGL is just tested on MacOS, which alredy includes the libraries, so nothing has to be done. Support for other platforms is coming.
 
 ### build
-
-**_A compiler that supports C++20 is required, the latest versions of Clang or GCC are recommended._**
 
 1. Clone the repository
 
