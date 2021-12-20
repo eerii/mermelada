@@ -83,8 +83,8 @@ else()
     message(STATUS "[INFO] SDL2 Libraries ${SDL2_LIBRARIES}")
     link_libraries(${SDL2_LIBRARIES})
 
-    find_library(sdl2_library_list NAMES SDL2 PATHS "${SDL2_LIBRARY_DIR}" NO_DEFAULT_PATH)
-    message(STATUS "[DEBUG] SDL2 Copy Dynamic Libraries ${sdl2_library_list}")
+    file(GLOB sdl2_library_list CONFIGURE_DEPENDS "${SDL2_LIBRARY_DIR}/libSDL2-2*.dylib" "${SDL2_LIBRARY_DIR}/libSDL2-2*.so.0" "${SDL2_LIBRARY_DIR}/x64/SDL2.dll")
+    message(STATUS "[INFO] SDL2 Copy Dynamic Libraries ${sdl2_library_list}")
 endif()
 
 # STB
@@ -135,13 +135,13 @@ if(NOT APPLE) # MacOS doesn't need this
     message(STATUS "[INFO] GLEW Libraries ${GLEW_LIBRARIES}")
     target_link_libraries(fresa-opengl PUBLIC ${GLEW_LIBRARIES})
 
-    find_library(glew_library_list NAMES GLEW PATHS "${GLEW_INCLUDE_DIRS}/../lib" NO_DEFAULT_PATH)
-    message(STATUS "[INFO] GLEW Libraries to Copy ${glew_library_list}")
+    file(GLOB glew_library_list CONFIGURE_DEPENDS "${GLEW_INCLUDE_DIRS}/../lib/libGLEW.so.${GLEW_VERSION_MAJOR}.${GLEW_VERSION_MINOR}")
+    message(STATUS "[INFO] GLEW Copy Dynamic Libraries ${glew_library_list}")
     add_custom_command(TARGET fresa-opengl POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${glew_library_list} $<TARGET_FILE_DIR:fresa-opengl>)
 
-    find_library(opengl_library_list NAMES OpenGl PATHS "${OPENGL_INCLUDE_DIR}/../lib" NO_DEFAULT_PATH)
-    message(STATUS "[INFO] OpenGL Libraries to Copy ${opengl_library_list}")
+    file(GLOB opengl_library_list CONFIGURE_DEPENDS "${OPENGL_INCLUDE_DIR}/../lib/libOpenGL.so.0")
+    message(STATUS "[INFO] OpenGL Copy Dynamic Libraries ${opengl_library_list}")
     add_custom_command(TARGET fresa-opengl POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${opengl_library_list} $<TARGET_FILE_DIR:fresa-opengl>)
 endif()
@@ -178,10 +178,8 @@ elseif(DEFINED ENV{VULKAN_SDK}) # CI defined the Vulkan SDK
 
     find_library(vulkan_library_list NAMES vulkan vulkan-1 PATHS "${VULKAN_SDK}/lib" "${VULKAN_SDK}/Lib" NO_DEFAULT_PATH)
     message(STATUS "[INFO] Vulkan Libraries ${vulkan_library_list}")
-    target_link_libraries(fresa-vulkan PUBLIC ${vulkan_library_list})
-)
 else()
-    message(FATAL_ERROR "[ERROR] Vulkan SDK not found")
+    message(FATAL_ERROR "Vulkan SDK not found")
 endif()
 
 target_include_directories(fresa-vulkan SYSTEM PUBLIC "${PROJECT_SOURCE_DIR}/deps/vma/include") # Warnings disabled
