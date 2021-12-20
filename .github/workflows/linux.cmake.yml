@@ -51,10 +51,10 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: fresa-opengl-linux
-        path: bin/fresa-opengl
+        path: bin/opengl/*
 
     - name: Store Binary (Vulkan)
       uses: actions/upload-artifact@v2
       with:
         name: fresa-vulkan-linux
-        path: bin/fresa-vulkan
+        path: bin/vulkan/*

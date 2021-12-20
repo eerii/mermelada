@@ -41,10 +41,10 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: fresa-opengl-macos
-        path: bin/fresa-opengl
+        path: bin/opengl/*
 
     #- name: Store Binary (Vulkan)
     #  uses: actions/upload-artifact@v2
     #  with:
     #    name: fresa-vulkan-macos
-    #    path: bin/fresa-vulkan
+    #    path: bin/vulkan/*

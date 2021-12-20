@@ -2,7 +2,7 @@
 
 A template repository for [fresa :strawberry:](https://github.com/josekoalas/fresa).
 
-[![linux](https://github.com/josekoalas/aguacate/actions/workflows/linux.cmake.yml/badge.svg)](https://github.com/josekoalas/aguacate/actions/workflows/linux.cmake.yml)
+[![linux](https://github.com/josekoalas/aguacate/actions/workflows/linux.cmake.yml/badge.svg)](https://github.com/josekoalas/aguacate/actions/workflows/linux.cmake.yml) [![macos](https://github.com/josekoalas/aguacate/actions/workflows/macos.cmake.yml/badge.svg)](https://github.com/josekoalas/aguacate/actions/workflows/macos.cmake.yml)
 
 ## building :hammer:
 
