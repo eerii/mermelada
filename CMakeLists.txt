@@ -1,7 +1,7 @@
 # CONFIGURATION
 # ------------------------------------------------------------------------------
 # CMake version
-cmake_minimum_required(VERSION 3.12...3.22)
+cmake_minimum_required(VERSION 3.13...3.22)
 
 # Project description
 project(fresa VERSION 0.3
@@ -79,12 +79,13 @@ add_compile_definitions(DISABLE_GUI) # Not implemented yet
 if(EMSCRIPTEN)
     set(EMSCRIPTEN_FLAGS "${EMSCRIPTEN_FLAGS} -s USE_SDL=2")
     include_directories(${SDL2_INCLUDE_DIRS})
-    link_libraries(${SDL2_LIBRARIES})
+    link_libraries(${SDL2_LIBRARIES}) 
 else()
     find_package(SDL2 REQUIRED)
     set(SDL2_INCLUDE_DIR ${SDL2_INCLUDE_DIRS}/.. CACHE BOOL "" FORCE)
     message(STATUS "[INFO] SDL2 Include Dir ${SDL2_INCLUDE_DIR}")
     include_directories(${SDL2_INCLUDE_DIR})
+    message(STATUS "[INFO] SDL2 Libraries ${SDL2_LIBRARIES}")
     link_libraries(${SDL2_LIBRARIES})
 endif()
 
@@ -128,9 +129,17 @@ target_compile_definitions(fresa-opengl PUBLIC USE_OPENGL)
 find_package(OpenGL REQUIRED)
 target_link_libraries(fresa-opengl PUBLIC OpenGL::GL)
 if(NOT APPLE) # MacOS doesn't need this
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DGLEW_STATIC")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DGLEW_STATIC")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -DGLEW_STATIC")
+    set(GLEW_USE_STATIC_LIBS TRUE)
     find_package(GLEW REQUIRED)
-    target_link_libraries(fresa-opengl PUBLIC GLEW::GLEW)
+    message(STATUS "[INFO] GLEW Include Dir ${GLEW_INCLUDE_DIRS}")
+    target_include_directories(fresa-opengl PUBLIC ${GLEW_INCLUDE_DIRS})
+    message(STATUS "[INFO] GLEW Libraries ${GLEW_STATIC_LIBRARIES}")
+    target_link_libraries(fresa-opengl PUBLIC ${GLEW_STATIC_LIBRARIES})
 endif()
+
 # ------------------------------------------------------------------------------
 endif()
 
@@ -146,4 +155,5 @@ target_link_libraries(fresa-vulkan PUBLIC Vulkan::Vulkan)
 target_include_directories(fresa-vulkan SYSTEM PUBLIC "${PROJECT_SOURCE_DIR}/deps/vma/include") # Warnings disabled
 # ------------------------------------------------------------------------------
 endif()
+
 endif()

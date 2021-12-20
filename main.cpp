@@ -15,7 +15,7 @@ using namespace Fresa;
 void game_loop_emscripten() { Game::update(); }
 #endif
 
-int main(int argc, const char * argv[]) {
+int main (int argv, char** args) {
     log::debug("Starting main");
     
     //: Initialize game
