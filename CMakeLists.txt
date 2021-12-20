@@ -129,15 +129,10 @@ target_compile_definitions(fresa-opengl PUBLIC USE_OPENGL)
 find_package(OpenGL REQUIRED)
 target_link_libraries(fresa-opengl PUBLIC OpenGL::GL)
 if(NOT APPLE) # MacOS doesn't need this
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DGLEW_STATIC")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DGLEW_STATIC")
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -DGLEW_STATIC")
-    set(GLEW_USE_STATIC_LIBS TRUE)
     find_package(GLEW REQUIRED)
     message(STATUS "[INFO] GLEW Include Dir ${GLEW_INCLUDE_DIRS}")
-    target_include_directories(fresa-opengl PUBLIC ${GLEW_INCLUDE_DIRS})
-    message(STATUS "[INFO] GLEW Libraries ${GLEW_STATIC_LIBRARIES}")
-    target_link_libraries(fresa-opengl PUBLIC ${GLEW_STATIC_LIBRARIES})
+    message(STATUS "[INFO] GLEW Libraries ${GLEW_LIBRARIES}")
+    target_link_libraries(fresa-opengl PUBLIC GLEW::GLEW)
 endif()
 
 # ------------------------------------------------------------------------------

@@ -2,6 +2,8 @@
 
 A template repository for [fresa :strawberry:](https://github.com/josekoalas/fresa).
 
+[![linux](https://github.com/josekoalas/aguacate/actions/workflows/linux.cmake.yml/badge.svg)](https://github.com/josekoalas/aguacate/actions/workflows/linux.cmake.yml)
+
 ## building :hammer:
 
 **Platforms**
@@ -35,7 +37,7 @@ If you are going to build for Vulkan, you need to install the Vulkan SDK Develop
 
 **OpenGL**
 
-On MacOS you don't need to do anything to build for OpenGL. For Linux, install `apt install glew-dev`. On Windows download if from the [official site](http://glew.sourceforge.net) or run `vcpkg install glew`.
+On MacOS you don't need to do anything to build for OpenGL. For Linux, install `apt install libglew-dev`. On Windows download if from the [official site](http://glew.sourceforge.net) or run `vcpkg install glew`.
 
 **Web**
 
