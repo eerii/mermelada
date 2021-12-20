@@ -1,0 +1,89 @@
+name: build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        build_config: ['Debug', 'Release']
+        graphics_api: ['opengl', 'vulkan']
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: recursive
+
+    - name: Update APT
+      run: sudo apt update
+
+    - name: Install SDL2
+      run: sudo apt install -y libsdl2-dev
+      
+    - name: Install GLEW
+      run: sudo apt install -y libglew-dev
+
+    - name: Install Vulkan SDK
+      run: |
+        wget -qO - http://packages.lunarg.com/lunarg-signing-key-pub.asc | sudo apt-key add -
+        sudo wget -qO /etc/apt/sources.list.d/lunarg-vulkan-focal.list http://packages.lunarg.com/vulkan/lunarg-vulkan-focal.list
+        sudo apt update
+        sudo apt install -y vulkan-sdk
+
+    - name: Configure CMake
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{matrix.build_config}}
+
+    - name: Build (${{matrix.graphics_api}})
+      run: cmake --build ${{github.workspace}}/build --target fresa-${{matrix.graphics_api}}
+      
+    - name: Store Binary
+      uses: actions/upload-artifact@v2
+      with:
+        name: Linux ${{matrix.graphics_api}} (${{matrix.build_config}})
+        path: bin/${{matrix.graphics_api}}/*
+
+  macos:
+    runs-on: macos-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        build_config: ['Debug', 'Release']
+        graphics_api: ['opengl', 'vulkan']
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: recursive
+
+    - name: Install SDL2
+      run: brew install sdl2
+
+    - name: Download Vulkan SDK
+      uses: actions/checkout@v2
+      with:
+        repository: 'krOoze/vk_sdk_lite'
+        path: 'VulkanSDK'
+        ref: macos
+
+    - name: Install Vulkan SDK
+      run: echo "${{github.workspace}}/VulkanSDK/macOS/bin" >> $GITHUB_PATH
+
+    - name: Configure CMake
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{matrix.build_config}}
+
+    - name: Build (${{matrix.graphics_api}})
+      run: cmake --build ${{github.workspace}}/build --target fresa-${{matrix.graphics_api}}
+      
+    - name: Store Binary
+      uses: actions/upload-artifact@v2
+      with:
+        name: MacOS ${{matrix.graphics_api}} (${{matrix.build_config}})
+        path: bin/${{matrix.graphics_api}}/*
