@@ -83,7 +83,7 @@ else()
     message(STATUS "[INFO] SDL2 Libraries ${SDL2_LIBRARIES}")
     link_libraries(${SDL2_LIBRARIES})
 
-    file(GLOB_RECURSE sdl2_library_list CONFIGURE_DEPENDS "${SDL2_LIBRARY_DIR}/libSDL2-2*.dylib" "${SDL2_LIBRARY_DIR}/libSDL2-2*.so.0" "${SDL2_LIBRARY_DIR}/x64/SDL2.dll")
+    find_library(sdl2_library_list NAMES SDL2 PATHS "${SDL2_LIBRARY_DIR}" NO_DEFAULT_PATH)
     message(STATUS "[DEBUG] SDL2 Copy Dynamic Libraries ${sdl2_library_list}")
 endif()
 
@@ -100,7 +100,7 @@ include_directories("${PROJECT_SOURCE_DIR}/deps/spirv_cross")
 link_libraries(spirv-cross-core spirv-cross-glsl spirv-cross-cpp spirv-cross-reflect spirv-cross-msl spirv-cross-hlsl spirv-cross-util spirv-cross-c)
 
 # CoreFoundation (Only MacOS)
-if (APPLE)
+if(APPLE)
     find_library(FoundationLib CoreFoundation)
     link_libraries(${FoundationLib})
 endif()
@@ -119,7 +119,7 @@ target_compile_definitions(fresa-web PUBLIC USE_OPENGL)
 # ------------------------------------------------------------------------------
 else()
 
-if (NOT NO_OPENGL)
+if(NOT NO_OPENGL)
 # ------------------------------------------------------------------------------
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin/opengl")
 add_executable(fresa-opengl main.cpp ${source_list} ${game_source_list} ${header_list} ${game_header_list} ${stb_header_list})
@@ -135,13 +135,13 @@ if(NOT APPLE) # MacOS doesn't need this
     message(STATUS "[INFO] GLEW Libraries ${GLEW_LIBRARIES}")
     target_link_libraries(fresa-opengl PUBLIC ${GLEW_LIBRARIES})
 
-    file(GLOB_RECURSE glew_library_list CONFIGURE_DEPENDS "${GLEW_INCLUDE_DIRS}/../lib/libGLEW.so.${GLEW_VERSION_MAJOR}.${GLEW_VERSION_MINOR}")
-    message(STATUS "[DEBUG] GLEW Copy Dynamic Libraries ${glew_library_list}")
+    find_library(glew_library_list NAMES GLEW PATHS "${GLEW_INCLUDE_DIRS}/../lib" NO_DEFAULT_PATH)
+    message(STATUS "[INFO] GLEW Libraries to Copy ${glew_library_list}")
     add_custom_command(TARGET fresa-opengl POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${glew_library_list} $<TARGET_FILE_DIR:fresa-opengl>)
 
-    file(GLOB_RECURSE opengl_library_list CONFIGURE_DEPENDS "${OPENGL_INCLUDE_DIR}/../lib/libOpenGL.so.0")
-    message(STATUS "[DEBUG] OpenGL Copy Dynamic Libraries ${opengl_library_list}")
+    find_library(opengl_library_list NAMES OpenGl PATHS "${OPENGL_INCLUDE_DIR}/../lib" NO_DEFAULT_PATH)
+    message(STATUS "[INFO] OpenGL Libraries to Copy ${opengl_library_list}")
     add_custom_command(TARGET fresa-opengl POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${opengl_library_list} $<TARGET_FILE_DIR:fresa-opengl>)
 endif()
@@ -157,7 +157,7 @@ add_custom_command(TARGET fresa-opengl POST_BUILD
 # ------------------------------------------------------------------------------
 endif()
 
-if (NOT NO_VULKAN)
+if(NOT NO_VULKAN)
 # VULKAN TARGET
 # ------------------------------------------------------------------------------
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin/vulkan")
@@ -165,8 +165,25 @@ add_executable(fresa-vulkan main.cpp ${source_list} ${game_source_list} ${header
 target_compile_definitions(fresa-vulkan PUBLIC USE_VULKAN)
 
 # Libraries
-find_package(Vulkan REQUIRED)
-target_link_libraries(fresa-vulkan PUBLIC Vulkan::Vulkan)
+find_package(Vulkan)
+if(Vulkan_FOUND) # Vulkan SDK installed on the system
+    target_link_libraries(fresa-vulkan PUBLIC Vulkan::Vulkan)
+elseif(DEFINED ENV{VULKAN_SDK}) # CI defined the Vulkan SDK
+    message(STATUS "[INFO] Vulkan SDK found at ${ENV{VULKAN_SDK}}")
+    set(VULKAN_SDK "${ENV{VULKAN_SDK}}")
+
+    find_path(vulkan_include_list vulkan/vulkan.h PATHS "${VULKAN_SDK}/Include" "${VULKAN_SDK}/include" NO_DEFAULT_PATH)
+    message(STATUS "[INFO] Vulkan Include Dirs ${vulkan_include_list}")
+    target_include_directories(fresa-vulkan PUBLIC ${vulkan_include_list})
+
+    find_library(vulkan_library_list NAMES vulkan vulkan-1 PATHS "${VULKAN_SDK}/lib" "${VULKAN_SDK}/Lib" NO_DEFAULT_PATH)
+    message(STATUS "[INFO] Vulkan Libraries ${vulkan_library_list}")
+    target_link_libraries(fresa-vulkan PUBLIC ${vulkan_library_list})
+)
+else()
+    message(FATAL_ERROR "[ERROR] Vulkan SDK not found")
+endif()
+
 target_include_directories(fresa-vulkan SYSTEM PUBLIC "${PROJECT_SOURCE_DIR}/deps/vma/include") # Warnings disabled
 
 # Copy dynamic libraries
