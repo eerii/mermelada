@@ -1,0 +1,50 @@
+name: macos
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  BUILD_TYPE: Debug
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: recursive
+
+    - name: Install SDL2
+      run: brew install sdl2
+
+    #- name: Install Vulkan SDK
+    #  run: 
+
+    - name: Configure CMake
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DNO_VULKAN=1
+
+    - name: Build (OpenGL)
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --target fresa-opengl
+
+    #- name: Build (Vulkan)
+    #  run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --target fresa-vulkan
+
+    - name: Test
+      working-directory: ${{github.workspace}}/build
+      run: ctest -C ${{env.BUILD_TYPE}}
+      
+    - name: Store Binary (OpenGL)
+      uses: actions/upload-artifact@v2
+      with:
+        name: fresa-opengl-macos
+        path: bin/fresa-opengl
+
+    #- name: Store Binary (Vulkan)
+    #  uses: actions/upload-artifact@v2
+    #  with:
+    #    name: fresa-vulkan-macos
+    #    path: bin/fresa-vulkan
