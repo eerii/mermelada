@@ -87,3 +87,9 @@ If you want to use one of them again, you will either have to run that command f
 **Output**
 
 After the build, the `bin` folder will contain a binary named after the target you chose and a copy of the `res` folder. You can execute the binary for the application to run. Packaging it into an app container is still being worked on.
+
+**Considerations**
+
+This is very very **experimental** software, and building is in the alpha state, so there are some temporary fixes for some issues.
+- When using OpenGL on Linux, the mesa drivers might have some issues loading the correct GL and GLSL versions, so you can override them by doing `export MESA_GL_VERSION_OVERRIDE=4.1` and `export MESA_GLSL_VERSION_OVERRIDE=410`. Of course, your system needs to [support this version](https://gpuinfo.org), but most graphic cards should. A compatibility layer might be added for older versions in the future.
+- Windows and Web builds still need work, they are not ready to be used.
