@@ -7,6 +7,35 @@ on:
     branches: [ main ]
 
 jobs:
+  web:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        build_config: ['Debug', 'Release']
+
+    steps:
+    - name: Clone repository
+      uses: actions/checkout@v2
+      with:
+        submodules: recursive
+
+    - name: Setup Emscripten
+      uses: mymindstorm/setup-emsdk@v11
+
+    - name: Configure CMake
+      run: emcmake cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{matrix.build_config}}
+
+    - name: Build
+      run: cmake --build ${{github.workspace}}/build --target fresa-web
+      
+    - name: Store Binary
+      uses: actions/upload-artifact@v2
+      with:
+        name: Web (${{matrix.build_config}})
+        path: bin/web/*
+
   linux:
     runs-on: ubuntu-latest
 
@@ -17,7 +46,8 @@ jobs:
         graphics_api: ['opengl', 'vulkan']
 
     steps:
-    - uses: actions/checkout@v2
+    - name: Clone repository
+      uses: actions/checkout@v2
       with:
         submodules: recursive
 
@@ -62,7 +92,8 @@ jobs:
       VULKAN_SDK: ${{github.workspace}}/VulkanSDK/macOS
 
     steps:
-    - uses: actions/checkout@v2
+    - name: Clone repository
+      uses: actions/checkout@v2
       with:
         submodules: recursive
 

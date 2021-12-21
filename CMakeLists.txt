@@ -8,7 +8,7 @@ project(fresa VERSION 0.3
               DESCRIPTION "a tiny game engine"
               LANGUAGES CXX)
  
-if(UNIX AND NOT APPLE)
+if(UNIX AND NOT APPLE AND NOT EMSCRIPTEN)
     set(LINUX TRUE)
 endif()
 
