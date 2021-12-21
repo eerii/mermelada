@@ -83,7 +83,7 @@ else()
     message(STATUS "[INFO] SDL2 Libraries ${SDL2_LIBRARIES}")
     link_libraries(${SDL2_LIBRARIES})
 
-    file(GLOB_RECURSE sdl2_library_list CONFIGURE_DEPENDS "${SDL2_LIBRARY_DIR}/libSDL2-2*.dylib" "${SDL2_LIBRARY_DIR}/libSDL2-2*.so.0" "${SDL2_LIBRARY_DIR}/x64/SDL2.dll")
+    file(GLOB_RECURSE sdl2_library_list CONFIGURE_DEPENDS "${SDL2_LIBRARY_DIR}/libSDL2-2*.dylib" "${SDL2_LIBRARY_DIR}/libSDL2-2*.so.0" "${SDL2_LIBRARY_DIR}/*.dll")
     message(STATUS "[INFO] SDL2 Copy Dynamic Libraries ${sdl2_library_list}")
 endif()
 
@@ -137,18 +137,24 @@ if(NOT APPLE) # MacOS doesn't need this
 
     file(GLOB_RECURSE glew_library_list CONFIGURE_DEPENDS "${GLEW_INCLUDE_DIRS}/../lib/libGLEW.so.${GLEW_VERSION_MAJOR}.${GLEW_VERSION_MINOR}")
     message(STATUS "[INFO] GLEW Copy Dynamic Libraries ${glew_library_list}")
+    if(glew_library_list)
     add_custom_command(TARGET fresa-opengl POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${glew_library_list} $<TARGET_FILE_DIR:fresa-opengl>)
+    endif()
 
     file(GLOB_RECURSE opengl_library_list CONFIGURE_DEPENDS "${OPENGL_INCLUDE_DIR}/../lib/libOpenGL.so.0")
     message(STATUS "[INFO] OpenGL Copy Dynamic Libraries ${opengl_library_list}")
+    if(opengl_library_list)
     add_custom_command(TARGET fresa-opengl POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${opengl_library_list} $<TARGET_FILE_DIR:fresa-opengl>)
+    endif()
 endif()
 
 # Copy dynamic libraries
+if(sdl2_library_list)
 add_custom_command(TARGET fresa-opengl POST_BUILD 
                    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${sdl2_library_list} $<TARGET_FILE_DIR:fresa-opengl>)
+endif()
 
 # Add resources to output folder
 add_custom_command(TARGET fresa-opengl POST_BUILD
@@ -170,11 +176,17 @@ target_link_libraries(fresa-vulkan PUBLIC Vulkan::Vulkan)
 target_include_directories(fresa-vulkan SYSTEM PUBLIC "${PROJECT_SOURCE_DIR}/deps/vma/include") # Warnings disabled
 
 # Copy dynamic libraries
-message(STATUS "[INFO] Vulkan Copy Dynamic Libraries ${Vulkan_LIBRARIES}")
+set(vulkan_library_list ${Vulkan_LIBRARIES})
+message(STATUS "[INFO] Vulkan Copy Dynamic Libraries ${vulkan_library_list}")
+if(vulkan_library_list)
 add_custom_command(TARGET fresa-vulkan POST_BUILD 
-                       COMMAND ${CMAKE_COMMAND} -E copy_if_different ${Vulkan_LIBRARIES} $<TARGET_FILE_DIR:fresa-vulkan>)
+                       COMMAND ${CMAKE_COMMAND} -E copy_if_different ${vulkan_library_list} $<TARGET_FILE_DIR:fresa-vulkan>)
+endif()
+
+if(sdl2_library_list)
 add_custom_command(TARGET fresa-vulkan POST_BUILD 
                    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${sdl2_library_list} $<TARGET_FILE_DIR:fresa-vulkan>)
+endif()
 
 # Add resources to output folder
 add_custom_command(TARGET fresa-vulkan POST_BUILD

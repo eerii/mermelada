@@ -89,7 +89,7 @@ jobs:
         graphics_api: ['opengl', 'vulkan']
     
     env:
-      VULKAN_SDK: ${{github.workspace}}/VulkanSDK/macOS
+      VULKAN_SDK: ${{github.workspace}}/vulkansdk
 
     steps:
     - name: Clone repository
@@ -103,8 +103,8 @@ jobs:
     - name: Download Vulkan SDK
       uses: actions/checkout@v2
       with:
-        repository: 'krOoze/vk_sdk_lite'
-        path: 'VulkanSDK'
+        repository: 'josekoalas/vulkan-sdk-lite'
+        path: 'vulkansdk'
         ref: macos
 
     - name: Install Vulkan SDK
@@ -120,4 +120,55 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: MacOS ${{matrix.graphics_api}} (${{matrix.build_config}})
+        path: bin/${{matrix.graphics_api}}/*
+
+  windows:
+    runs-on: windows-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        build_config: ['Debug', 'Release']
+        graphics_api: ['opengl', 'vulkan']
+    
+    env:
+      VULKAN_SDK: ${{github.workspace}}/vulkansdk
+
+    steps:
+    - name: Clone repository
+      uses: actions/checkout@v2
+      with:
+        submodules: recursive
+
+    - name: Setup vcpkg
+      uses: friendlyanon/setup-vcpkg@v1
+      with:
+        committish: 0fd31b9dbb96e1ab86e0c9ee930790990a974bd3
+    
+    - name: Install SDL2
+      run: vcpkg install sdl2:x64-windows
+    
+    - name: Install GLEW
+      run: vcpkg install glew:x64-windows
+
+    - name: Download Vulkan SDK
+      uses: actions/checkout@v2
+      with:
+        repository: 'josekoalas/vulkan-sdk-lite'
+        path: 'vulkansdk'
+        ref: windows
+
+    - name: Install Vulkan SDK
+      run: echo "${{env.VULKAN_SDK}}/bin" >> $GITHUB_PATH
+
+    - name: Configure CMake
+      run: cmake -B ${{github.workspace}}/build -G "Visual Studio 16 2019" -A "x64" -D "CMAKE_TOOLCHAIN_FILE=${{env.VCPKG_ROOT}}/scripts/buildsystems/vcpkg.cmake" -DCMAKE_BUILD_TYPE=${{matrix.build_config}}
+
+    - name: Build (${{matrix.graphics_api}})
+      run: cmake --build ${{github.workspace}}/build --target fresa-${{matrix.graphics_api}}
+      
+    - name: Store Binary
+      uses: actions/upload-artifact@v2
+      with:
+        name: Windows ${{matrix.graphics_api}} (${{matrix.build_config}})
         path: bin/${{matrix.graphics_api}}/*
