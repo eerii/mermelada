@@ -165,28 +165,14 @@ add_executable(fresa-vulkan main.cpp ${source_list} ${game_source_list} ${header
 target_compile_definitions(fresa-vulkan PUBLIC USE_VULKAN)
 
 # Libraries
-find_package(Vulkan)
-if(Vulkan_FOUND) # Vulkan SDK installed on the system
-    target_link_libraries(fresa-vulkan PUBLIC Vulkan::Vulkan)
-elseif(DEFINED ENV{VULKAN_SDK}) # CI defined the Vulkan SDK
-    message(STATUS "[INFO] Vulkan SDK found at ${ENV{VULKAN_SDK}}")
-    set(VULKAN_SDK "${ENV{VULKAN_SDK}}")
-
-    find_path(vulkan_include_list vulkan/vulkan.h PATHS "${VULKAN_SDK}/Include" "${VULKAN_SDK}/include" NO_DEFAULT_PATH)
-    message(STATUS "[INFO] Vulkan Include Dirs ${vulkan_include_list}")
-    target_include_directories(fresa-vulkan PUBLIC ${vulkan_include_list})
-
-    find_library(vulkan_library_list NAMES vulkan vulkan-1 PATHS "${VULKAN_SDK}/lib" "${VULKAN_SDK}/Lib" NO_DEFAULT_PATH)
-    message(STATUS "[INFO] Vulkan Libraries ${vulkan_library_list}")
-    add_custom_command(TARGET fresa-vulkan POST_BUILD 
-                       COMMAND ${CMAKE_COMMAND} -E copy_if_different ${vulkan_library_list} $<TARGET_FILE_DIR:fresa-vulkan>)
-else()
-    message(FATAL_ERROR "Vulkan SDK not found")
-endif()
-
+find_package(Vulkan REQUIRED)
+target_link_libraries(fresa-vulkan PUBLIC Vulkan::Vulkan)
 target_include_directories(fresa-vulkan SYSTEM PUBLIC "${PROJECT_SOURCE_DIR}/deps/vma/include") # Warnings disabled
 
 # Copy dynamic libraries
+message(STATUS "[INFO] Vulkan Copy Dynamic Libraries ${Vulkan_LIBRARIES}")
+add_custom_command(TARGET fresa-vulkan POST_BUILD 
+                       COMMAND ${CMAKE_COMMAND} -E copy_if_different ${Vulkan_LIBRARIES} $<TARGET_FILE_DIR:fresa-vulkan>)
 add_custom_command(TARGET fresa-vulkan POST_BUILD 
                    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${sdl2_library_list} $<TARGET_FILE_DIR:fresa-vulkan>)
 
