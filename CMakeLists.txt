@@ -63,9 +63,12 @@ file(GLOB_RECURSE game_source_list CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/game
 
 # COMMON
 # ------------------------------------------------------------------------------
-# Preprocessor macros
-add_compile_definitions(DEBUG)
-add_compile_definitions(DISABLE_GUI) # Not implemented yet
+# Preprocessor macros (GUI is disabled since it is not implemented yet)
+add_compile_definitions(
+  DISABLE_GUI
+  $<$<CONFIG:DEBUG>:DEBUG>
+  $<$<CONFIG:DEBUG>:LOG_LEVEL=5>
+)
 
 # SDL2 (The include dir has /.. so it can be included explicitly using #include <SDL2/SDL.h>)
 if(EMSCRIPTEN)
@@ -83,7 +86,7 @@ else()
     message(STATUS "[INFO] SDL2 Libraries ${SDL2_LIBRARIES}")
     link_libraries(${SDL2_LIBRARIES})
 
-    file(GLOB_RECURSE sdl2_library_list CONFIGURE_DEPENDS "${SDL2_LIBRARY_DIR}/libSDL2-2*.dylib" "${SDL2_LIBRARY_DIR}/libSDL2-2*.so.0" "${SDL2_LIBRARY_DIR}/*.dll")
+    file(GLOB_RECURSE sdl2_library_list CONFIGURE_DEPENDS "${SDL2_LIBRARY_DIR}/libSDL2-2*.dylib" "${SDL2_LIBRARY_DIR}/libSDL2-2*.so.0")
     message(STATUS "[INFO] SDL2 Copy Dynamic Libraries ${sdl2_library_list}")
 endif()
 
