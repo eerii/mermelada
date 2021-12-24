@@ -5,6 +5,7 @@
 #include "log.h"
 #include "game.h"
 #include "scene.h"
+#include "file.h"
 
 #include "system_list.h"
 
@@ -29,7 +30,7 @@ int main (int argv, char** args) {
     EntityID e = scene_list.at(scene).createEntity();
     Component::Test* c = scene_list.at(scene).addComponent<Component::Test>(e);
     
-    System::test_texture_data = Graphics::getTextureID("res/graphics/texture.png");
+    System::test_texture_data = Graphics::getTextureID(File::path("graphics/texture.png"));
     System::test_draw_id = Graphics::getDrawID_Rect(Graphics::SHADER_DRAW_TEX);
     Graphics::bindTexture(System::test_draw_id, System::test_texture_data);
     System::test_draw_id_2 = Graphics::getDrawID_Cube(Graphics::SHADER_DRAW_COLOR);

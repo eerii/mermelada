@@ -29,7 +29,7 @@ if(EMSCRIPTEN)
     set(CMAKE_EXECUTABLE_SUFFIX .html)
 
     # Add resources to web bundle
-    set(EMSCRIPTEN_FLAGS "${EMSCRIPTEN_FLAGS} --preload-file \"${PROJECT_SOURCE_DIR}/res\"")
+    set(EMSCRIPTEN_FLAGS "${EMSCRIPTEN_FLAGS} --preload-file \"${PROJECT_SOURCE_DIR}/res@\"")
 endif()
 # ------------------------------------------------------------------------------
 
