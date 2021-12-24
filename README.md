@@ -8,7 +8,7 @@ A template repository for [fresa :strawberry:](https://github.com/josekoalas/fre
 
 **Platforms**
 
-Right now the project is in the **very pre-alpha** state. Only MacOS is tested, though Web, Linux and Windows support should come soon.
+Please keep in mind that right now the project is in the **very pre-alpha** state.
 
 ### prerequisites
 
@@ -41,7 +41,7 @@ On MacOS you don't need to do anything to build for OpenGL. For Linux, install `
 
 **Web**
 
-Building for web requires [emscripten](https://emscripten.org/docs/getting_started/downloads.html), check their site for instructions. **The web build can't render anything right now, it has an issue with shaders that is being worked on.**
+Building for web requires [emscripten](https://emscripten.org/docs/getting_started/downloads.html), check their site for instructions.
 
 **Other dependencies**
 
@@ -92,4 +92,4 @@ After the build, the `bin` folder will contain a binary named after the target y
 
 This is very very **experimental** software, and building is in the alpha state, so there are some temporary fixes for some issues.
 - When using OpenGL on Linux, the mesa drivers might have some issues loading the correct GL and GLSL versions, so you can override them by doing `export MESA_GL_VERSION_OVERRIDE=4.1` and `export MESA_GLSL_VERSION_OVERRIDE=410`. Of course, your system needs to [support this version](https://gpuinfo.org), but most graphic cards should. A compatibility layer might be added for older versions in the future.
-- Windows and Web builds still need work, they are not ready to be used.
+- Windows still needs work, it is not ready to be used.
