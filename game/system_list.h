@@ -30,13 +30,13 @@ namespace Fresa::System
             }*/
             
             //: Sample camera update
-            if (Input::keyboard_down(119))
+            if (Input::key_down(SDLK_w))
                 Graphics::camera.pos.y += 1.0f * Time::physics_delta;
-            if (Input::keyboard_down(115))
+            if (Input::key_down(SDLK_s))
                 Graphics::camera.pos.y -= 1.0f * Time::physics_delta;
-            if (Input::keyboard_down(100))
+            if (Input::key_down(SDLK_d))
                 Graphics::camera.pos.x += 1.0f * Time::physics_delta;
-            if (Input::keyboard_down(97))
+            if (Input::key_down(SDLK_a))
                 Graphics::camera.pos.x -= 1.0f * Time::physics_delta;
         }
         

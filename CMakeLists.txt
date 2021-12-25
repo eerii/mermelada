@@ -65,9 +65,9 @@ file(GLOB_RECURSE game_source_list CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/game
 # ------------------------------------------------------------------------------
 # Preprocessor macros (GUI is disabled since it is not implemented yet)
 add_compile_definitions(
-  DISABLE_GUI
   $<$<CONFIG:DEBUG>:DEBUG>
   $<$<CONFIG:DEBUG>:LOG_LEVEL=5>
+  $<$<CONFIG:RELEASE>:DISABLE_GUI>
 )
 
 # SDL2 (The include dir has /.. so it can be included explicitly using #include <SDL2/SDL.h>)
