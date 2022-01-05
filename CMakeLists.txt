@@ -20,6 +20,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # Look for shared libraries at the same folder
 if(LINUX)
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-rpath='$ORIGIN'")
+    set(CMAKE_CXX_LINK_EXECUTABLE "${CMAKE_CXX_LINK_EXECUTABLE} -ldl")
 endif()
 
 # Emscripten flags
@@ -97,6 +98,24 @@ file(GLOB_RECURSE stb_header_list CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/deps/
 # GLM
 include_directories("${PROJECT_SOURCE_DIR}/deps/glm")
 
+# imGui
+if(NOT EMSCRIPTEN)
+    set(IMGUI_DIR "${PROJECT_SOURCE_DIR}/deps/imgui")
+    add_library(imgui STATIC)
+
+    target_sources(imgui PRIVATE
+        ${IMGUI_DIR}/imgui_demo.cpp
+        ${IMGUI_DIR}/imgui_draw.cpp
+        ${IMGUI_DIR}/imgui_tables.cpp
+        ${IMGUI_DIR}/imgui_widgets.cpp
+        ${IMGUI_DIR}/imgui.cpp
+        ${IMGUI_DIR}/backends/imgui_impl_sdl.cpp)
+        
+    target_include_directories(imgui PUBLIC ${IMGUI_DIR} ${IMGUI_DIR}/backends ${SDL2_INCLUDE_DIR})
+    
+    target_link_libraries(imgui PUBLIC ${SDL2_LIBRARIES})
+endif()
+
 # SpirV Cross
 add_subdirectory("deps/spirv-cross")
 include_directories("${PROJECT_SOURCE_DIR}/deps/spirv_cross")
@@ -118,7 +137,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${EMSCRIPTEN_FLAGS}")
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${EMSCRIPTEN_FLAGS}")
 
 add_executable(fresa-web main.cpp ${source_list} ${game_source_list} ${header_list} ${game_header_list} ${stb_header_list})
-target_compile_definitions(fresa-web PUBLIC USE_OPENGL)
+target_compile_definitions(fresa-web PUBLIC USE_OPENGL $<$<CONFIG:DEBUG>:DISABLE_GUI>)
 # ------------------------------------------------------------------------------
 else()
 
@@ -153,6 +172,11 @@ if(NOT APPLE) # MacOS doesn't need this
     endif()
 endif()
 
+# imGui
+target_sources(imgui PRIVATE ${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp)
+target_link_libraries(imgui PUBLIC OpenGL::GL)
+target_link_libraries(fresa-opengl PUBLIC $<$<NOT:$<CONFIG:RELEASE>>:imgui>)
+
 # Copy dynamic libraries
 if(sdl2_library_list)
 add_custom_command(TARGET fresa-opengl POST_BUILD 
@@ -177,6 +201,11 @@ target_compile_definitions(fresa-vulkan PUBLIC USE_VULKAN)
 find_package(Vulkan REQUIRED)
 target_link_libraries(fresa-vulkan PUBLIC Vulkan::Vulkan)
 target_include_directories(fresa-vulkan SYSTEM PUBLIC "${PROJECT_SOURCE_DIR}/deps/vma/include") # Warnings disabled
+
+# imGui
+target_sources(imgui PRIVATE ${IMGUI_DIR}/backends/imgui_impl_vulkan.cpp)
+target_link_libraries(imgui PUBLIC Vulkan::Vulkan)
+target_link_libraries(fresa-vulkan PUBLIC $<$<NOT:$<CONFIG:RELEASE>>:imgui>)
 
 # Copy dynamic libraries
 set(vulkan_library_list ${Vulkan_LIBRARIES})
