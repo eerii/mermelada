@@ -18,6 +18,7 @@ namespace Fresa::System
 
     inline Graphics::TextureID test_texture_data;
     inline Graphics::DrawID test_draw_id;
+    inline Graphics::DrawID test_draw_id_b;
     inline Graphics::DrawID test_draw_id_2;
     
     inline Clock::time_point start_time = time();
@@ -31,26 +32,27 @@ namespace Fresa::System
             
             //: Sample camera update
             if (Input::key_down(SDLK_w))
-                Graphics::camera.pos.y += 1.0f * Time::physics_delta;
+                Graphics::camera.pos.y += 300.0f * Time::physics_delta;
             if (Input::key_down(SDLK_s))
-                Graphics::camera.pos.y -= 1.0f * Time::physics_delta;
+                Graphics::camera.pos.y -= 300.0f * Time::physics_delta;
             if (Input::key_down(SDLK_d))
-                Graphics::camera.pos.x += 1.0f * Time::physics_delta;
+                Graphics::camera.pos.x += 300.0f * Time::physics_delta;
             if (Input::key_down(SDLK_a))
-                Graphics::camera.pos.x -= 1.0f * Time::physics_delta;
+                Graphics::camera.pos.x -= 300.0f * Time::physics_delta;
         }
         
         inline static void render() {
             float t = sec(time() - start_time);
             
-            glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.0f + 0.8f * std::sin(t * 1.570796f), 0.0f));
-            model = glm::scale(model, glm::vec3(0.6f, 0.6f, 0.6f));
-            model = glm::rotate(model, -1.570796f, glm::vec3(1.0f, 0.0f, 0.0f));
-            model = glm::rotate(model, t * 1.570796f, glm::vec3(0.0f, 0.0f, 1.0f));
+            glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -180.0f + 40.0f * std::sin(t * 1.570796f), 0.0f));
+            model = glm::scale(model, glm::vec3(100.0f, 100.0f, 100.0f));
+            model = glm::rotate(model, t * 3.141592f, glm::vec3(0.0f, 1.0f, 0.0f));
             Graphics::draw(test_draw_id, model);
+            model = glm::scale(model, glm::vec3(-1.0f, 1.0f, 1.0f));
+            Graphics::draw(test_draw_id_b, model); //Quick hack to avoid disabling culling
             
-            glm::mat4 model2 = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 1.0f + 0.8f * std::sin(t * 1.570796f + 1.570796f), 0.0f));
-            model2 = glm::scale(model2, glm::vec3(0.5f, 0.5f, 0.5f));
+            glm::mat4 model2 = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 180.0f + 80.0f * std::sin(t * 1.570796f + 1.570796f), 0.0f));
+            model2 = glm::scale(model2, glm::vec3(100.0f, 100.0f, 100.0f));
             model2 = glm::rotate(model2, 1.570796f, glm::vec3(1.0f, 0.0f, 0.0f));
             model2 = glm::rotate(model2, -t * 1.570796f, glm::vec3(0.0f, 0.0f, 1.0f));
             Graphics::draw(test_draw_id_2, model2);

@@ -33,6 +33,8 @@ int main (int argv, char** args) {
     System::test_texture_data = Graphics::getTextureID(File::path("graphics/texture.png"));
     System::test_draw_id = Graphics::getDrawID_Rect(Graphics::SHADER_DRAW_TEX);
     Graphics::bindTexture(System::test_draw_id, System::test_texture_data);
+    System::test_draw_id_b = Graphics::getDrawID_Rect(Graphics::SHADER_DRAW_TEX);
+    Graphics::bindTexture(System::test_draw_id_b, System::test_texture_data);
     System::test_draw_id_2 = Graphics::getDrawID_Cube(Graphics::SHADER_DRAW_COLOR);
     
     //: Update loop
