@@ -1,0 +1,21 @@
+# main render pass
+
+a color color_input res
+a depth depth res
+a post color_external res
+s draw [color depth]
+s post [color post]
+r [draw post]
+
+# window render pass
+
+a swapchain
+s window [swapchain] [post]
+r [window]
+
+# pipelines/shaders
+
+p test_color draw vd_color
+p test_tex draw vd_tex
+p test_subpass post vd_win
+p test_window window vd_win

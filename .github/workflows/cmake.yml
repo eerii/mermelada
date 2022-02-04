@@ -123,7 +123,7 @@ jobs:
         path: bin/${{matrix.graphics_api}}/*
 
   windows:
-    runs-on: windows-latest
+    runs-on: windows-2022
 
     strategy:
       fail-fast: false
@@ -162,7 +162,7 @@ jobs:
       run: echo "${{env.VULKAN_SDK}}/bin" >> $GITHUB_PATH
 
     - name: Configure CMake
-      run: cmake -B ${{github.workspace}}/build -G "Visual Studio 16 2019" -A "x64" -D "CMAKE_TOOLCHAIN_FILE=${{env.VCPKG_ROOT}}/scripts/buildsystems/vcpkg.cmake" -DCMAKE_BUILD_TYPE=${{matrix.build_config}}
+      run: cmake -B ${{github.workspace}}/build -G "Visual Studio 17 2022" -A "x64" -D "CMAKE_TOOLCHAIN_FILE=${{env.VCPKG_ROOT}}/scripts/buildsystems/vcpkg.cmake" -DCMAKE_BUILD_TYPE=${{matrix.build_config}}
 
     - name: Build (${{matrix.graphics_api}})
       run: cmake --build ${{github.workspace}}/build --target fresa-${{matrix.graphics_api}}
