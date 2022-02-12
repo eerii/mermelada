@@ -28,6 +28,14 @@ namespace Fresa::System
     inline std::array<glm::vec3, 20> rotations{};
     inline std::array<glm::vec3, 16> positions_floor{};
     
+    inline const std::vector<Graphics::Projection> projections = {
+        Graphics::PROJECTION_ORTHOGRAPHIC,
+        Graphics::Projection(Graphics::PROJECTION_ORTHOGRAPHIC | Graphics::PROJECTION_SCALED),
+        Graphics::PROJECTION_PERSPECTIVE,
+        Graphics::Projection(Graphics::PROJECTION_PERSPECTIVE | Graphics::PROJECTION_SCALED),
+    };
+    inline int proj_i = 0;
+    
     struct SomeSystem : PhysicsUpdate<SomeSystem, PRIORITY_MOVEMENT>, RenderUpdate<SomeSystem> {
         inline static void update() {
             /*Scene& s = scene_list.at(active_scene);
@@ -40,14 +48,31 @@ namespace Fresa::System
                 Graphics::camera.pos.x += 300.0f * Time::physics_delta;
             if (Input::key_down(SDLK_a))
                 Graphics::camera.pos.x -= 300.0f * Time::physics_delta;
-            if (Input::key_down(SDLK_q))
-                Graphics::camera.pos.y += 300.0f * Time::physics_delta;
-            if (Input::key_down(SDLK_e))
-                Graphics::camera.pos.y -= 300.0f * Time::physics_delta;
-            if (Input::key_down(SDLK_w))
-                Graphics::camera.pos.z -= 300.0f * Time::physics_delta;
-            if (Input::key_down(SDLK_s))
-                Graphics::camera.pos.z += 300.0f * Time::physics_delta;
+            
+            if (Graphics::camera.proj_type & Graphics::PROJECTION_PERSPECTIVE) {
+                if (Input::key_down(SDLK_q))
+                    Graphics::camera.pos.y += 300.0f * Time::physics_delta;
+                if (Input::key_down(SDLK_e))
+                    Graphics::camera.pos.y -= 300.0f * Time::physics_delta;
+                if (Input::key_down(SDLK_w))
+                    Graphics::camera.pos.z -= 300.0f * Time::physics_delta;
+                if (Input::key_down(SDLK_s))
+                    Graphics::camera.pos.z += 300.0f * Time::physics_delta;
+            } else {
+                if (Input::key_down(SDLK_w))
+                    Graphics::camera.pos.y -= 300.0f * Time::physics_delta;
+                if (Input::key_down(SDLK_s))
+                    Graphics::camera.pos.y += 300.0f * Time::physics_delta;
+            }
+            
+            if (Input::key_pressed(SDLK_TAB)) {
+                proj_i = (proj_i + 1) % projections.size();
+                Graphics::camera.proj_type = projections.at(proj_i);
+                Graphics::updateCameraProjection(Graphics::camera);
+                Graphics::win.scaled_ubo = (Graphics::camera.proj_type & Graphics::PROJECTION_SCALED) ?
+                                            Graphics::API::getScaledWindowUBO(Graphics::win) :
+                                            Graphics::UniformBufferObject{glm::mat4(1.0f),glm::mat4(1.0f),glm::mat4(1.0f)};
+            }
         }
         
         inline static void render() {
@@ -89,8 +114,12 @@ namespace Fresa::System
             glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 100.0f * std::sin(t * 1.570796f), -100.0f));
             model = glm::scale(model, glm::vec3(1.0f) * 100.0f);
             model = glm::rotate(model, t * 3.141592f, glm::vec3(0.0f, 1.0f, 0.0f));
+            model = glm::translate(model, glm::vec3(-0.5f, 0.0f, 0.0f));
             Graphics::draw(draw_id_tex_a, model);
-            model = glm::scale(model, glm::vec3(-1.0f, 1.0f, 1.0f));
+            model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 100.0f * std::sin(t * 1.570796f), -100.0f));
+            model = glm::scale(model, glm::vec3(1.0f) * 100.0f);
+            model = glm::rotate(model, (t + 1.0f) * 3.141592f, glm::vec3(0.0f, 1.0f, 0.0f));
+            model = glm::translate(model, glm::vec3(-0.5f, 0.0f, 0.0f));
             Graphics::draw(draw_id_tex_b, model); //Quick hack to avoid disabling culling
             
             //: Cubes

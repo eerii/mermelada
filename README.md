@@ -64,8 +64,8 @@ cd aguacate
 3. Build using CMake (replace TARGET as indicated below)
 
 ```
-cmake -S . -B build FLAGS
-cmake --build build --target TARGET
+cmake -S . -B build {FLAGS}
+cmake --build build --target {TARGET}
 ```
 
 **Targets**

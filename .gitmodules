@@ -1,18 +1,16 @@
 [submodule "fresa"]
 	path = fresa
 	url = https://github.com/josekoalas/fresa.git
-[submodule "deps/imgui"]
-	path = deps/imgui
-	url = https://github.com/josekoalas/imgui.git
-[submodule "deps/stb"]
-	path = deps/stb
-	url = https://github.com/josekoalas/stb.git
 [submodule "deps/glm"]
 	path = deps/glm
 	url = https://github.com/g-truc/glm.git
 [submodule "deps/spirv-cross"]
 	path = deps/spirv-cross
-	url = https://github.com/josekoalas/SPIRV-Cross
+	url = https://github.com/KhronosGroup/SPIRV-Cross
 [submodule "deps/vma"]
 	path = deps/vma
-	url = https://github.com/josekoalas/VulkanMemoryAllocator.git
+	url = https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator
+[submodule "deps/imgui"]
+	path = deps/imgui
+	url = https://github.com/ocornut/imgui
+	branch = docking

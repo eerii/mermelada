@@ -1,6 +1,6 @@
 #version 450
 
-layout(binding = 0) uniform sampler2D attachment;
+layout(binding = 1) uniform sampler2D attachment;
 
 layout(location = 0) in vec2 frag_uv;
 

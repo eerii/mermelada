@@ -111,7 +111,8 @@ if(NOT EMSCRIPTEN)
         ${IMGUI_DIR}/imgui.cpp
         ${IMGUI_DIR}/backends/imgui_impl_sdl.cpp)
         
-    target_include_directories(imgui PUBLIC ${IMGUI_DIR} ${IMGUI_DIR}/backends ${SDL2_INCLUDE_DIR})
+    # ImGui needs SDL included using the subdirectory SDL2
+    target_include_directories(imgui PUBLIC ${IMGUI_DIR} ${IMGUI_DIR}/backends ${SDL2_INCLUDE_DIR}/SDL2)
     
     target_link_libraries(imgui PUBLIC ${SDL2_LIBRARIES})
 endif()
