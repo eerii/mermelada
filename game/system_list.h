@@ -116,11 +116,13 @@ namespace Fresa::System
             model = glm::rotate(model, t * 3.141592f, glm::vec3(0.0f, 1.0f, 0.0f));
             model = glm::translate(model, glm::vec3(-0.5f, 0.0f, 0.0f));
             Graphics::draw(draw_id_tex_a, model);
+            #ifndef USE_OPENGL
             model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 100.0f * std::sin(t * 1.570796f), -100.0f));
             model = glm::scale(model, glm::vec3(1.0f) * 100.0f);
             model = glm::rotate(model, (t + 1.0f) * 3.141592f, glm::vec3(0.0f, 1.0f, 0.0f));
             model = glm::translate(model, glm::vec3(-0.5f, 0.0f, 0.0f));
             Graphics::draw(draw_id_tex_b, model); //Quick hack to avoid disabling culling
+            #endif
             
             //: Cubes
             for (int i = 0; i < draw_ids_cube.size(); i++) {

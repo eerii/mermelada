@@ -60,6 +60,26 @@ file(GLOB_RECURSE source_list CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/fresa/*.c
 
 file(GLOB_RECURSE game_header_list CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/game/*.h")
 file(GLOB_RECURSE game_source_list CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/game/*.cpp")
+
+# Compile shaders
+file(GLOB_RECURSE shader_list CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/res/*.frag" "${PROJECT_SOURCE_DIR}/res/*.vert")
+list(LENGTH shader_list shader_list_count)
+message(STATUS "[INFO] Found ${shader_list_count} shaders.")
+
+find_program(GLSLC glslc)
+if(NOT GLSLC)
+    message(STATUS "[WARNING] GLSLC not found, not compiling shaders.")
+else()
+    foreach(shader IN LISTS shader_list)
+    add_custom_command(
+        OUTPUT ${shader}.spv
+        COMMAND ${GLSLC} ${shader} -o ${shader}.spv
+        DEPENDS ${shader})
+    list(APPEND spv_shaders ${shader}.spv)
+    endForeach()
+    add_custom_target(shaders ALL DEPENDS ${spv_shaders})
+endif()
+
 # ------------------------------------------------------------------------------
 
 # COMMON
@@ -139,6 +159,10 @@ set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${EMSCRIPTEN_FLAGS}")
 
 add_executable(fresa-web main.cpp ${source_list} ${game_source_list} ${header_list} ${game_header_list} ${stb_header_list})
 target_compile_definitions(fresa-web PUBLIC USE_OPENGL $<$<CONFIG:DEBUG>:DISABLE_GUI>)
+
+if(GLSLC)
+add_dependencies(fresa-web shaders)
+endif()
 # ------------------------------------------------------------------------------
 else()
 
@@ -188,6 +212,10 @@ endif()
 add_custom_command(TARGET fresa-opengl POST_BUILD
                    COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/res $<TARGET_FILE_DIR:fresa-opengl>/res)
 
+# Shaders
+if(GLSLC)
+add_dependencies(fresa-opengl shaders)
+endif()
 # ------------------------------------------------------------------------------
 endif()
 
@@ -213,7 +241,7 @@ set(vulkan_library_list ${Vulkan_LIBRARIES})
 message(STATUS "[INFO] Vulkan Copy Dynamic Libraries ${vulkan_library_list}")
 if(vulkan_library_list)
 add_custom_command(TARGET fresa-vulkan POST_BUILD 
-                       COMMAND ${CMAKE_COMMAND} -E copy_if_different ${vulkan_library_list} $<TARGET_FILE_DIR:fresa-vulkan>)
+                   COMMAND ${CMAKE_COMMAND} -E copy_if_different ${vulkan_library_list} $<TARGET_FILE_DIR:fresa-vulkan>)
 endif()
 
 if(sdl2_library_list)
@@ -224,6 +252,11 @@ endif()
 # Add resources to output folder
 add_custom_command(TARGET fresa-vulkan POST_BUILD
                    COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/res $<TARGET_FILE_DIR:fresa-vulkan>/res)
+
+# Shaders
+if(GLSLC)
+add_dependencies(fresa-opengl shaders)
+endif()
 # ------------------------------------------------------------------------------
 endif()
 
