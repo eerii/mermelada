@@ -1,21 +1,27 @@
-# main render pass
+# render description file
+# a - attachment            a name type size
+# s - subpass               s name [attachment list...]
+# r - renderpass            r [subpass list...]
+# d/p - shader              p shader subpass vertices       d - draw shader, p - post shader
 
-a color color_input res
-a depth depth res
-a post color_external res
-s draw [color depth]
-s post [color post]
-r [draw post]
+### main render pass
 
-# window render pass
+a a_color     color_input         res
+a a_depth     depth               res
+a a_post      color_external      res
+s s_draw      [a_color a_depth]
+s s_post      [a_color a_post]
+r             [s_draw s_post]
+
+### window render pass
 
 a swapchain
-s window [swapchain] [post]
-r [window]
+s s_window    [swapchain]    [a_post]
+r             [s_window]
 
-# pipelines/shaders
+### shaders
 
-p test_color draw vd_color
-p test_tex draw vd_tex
-p test_subpass post vd_win
-p test_window window vd_win
+d draw_color  s_draw    pos3color
+d draw_tex    s_draw    pos3uv
+p post        s_post    pos2
+p window      s_window  pos2
