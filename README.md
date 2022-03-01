@@ -45,7 +45,7 @@ Building for web requires [emscripten](https://emscripten.org/docs/getting_start
 
 **Other dependencies**
 
-Some dependencies already come with this sample repository as submodules (imGUI, SPIR-V Cross, glm, stb and VulkanMemoryAllocator). You can find them in the [deps](https://github.com/josekoalas/aguacate/tree/main/deps) folder. For now OpenGL is just tested on MacOS, which alredy includes the libraries, so nothing has to be done. Support for other platforms is coming.
+Some dependencies already come with this sample repository as submodules (imGUI, SPIR-V Cross, glm, stb and VulkanMemoryAllocator). You can find them in the [deps](https://github.com/josekoalas/aguacate/tree/main/deps) folder.
 
 ### build
 
