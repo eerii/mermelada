@@ -1,8 +1,9 @@
-//project verse, 2017-2022
+//project fresa, 2017-2022
 //by jose pazos perez
 //licensed under GPLv3 uwu
 
 #include "log.h"
+#include "game_config.h"
 #include "game.h"
 #include "scene.h"
 #include "file.h"

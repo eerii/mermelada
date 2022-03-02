@@ -1,4 +1,4 @@
-//project verse, 2017-2022
+//project fresa, 2017-2022
 //by jose pazos perez
 //licensed under GPLv3 uwu
 
@@ -18,16 +18,18 @@ namespace Fresa::System
     //: Example of a hardcoded render system
     //: This is very basic and not elegant, it will be reworked in the future
 
+    inline const int n = 20;
+    
     inline TextureID texture_data;
     inline DrawID draw_id_tex_a;
     inline DrawID draw_id_tex_b;
-    inline std::array<DrawID, 20> draw_ids_cube{};
+    inline std::array<DrawID, n> draw_ids_cube{};
     inline std::array<DrawID, 16> draw_ids_floor{};
     
     inline Clock::time_point start_time = time();
     
-    inline std::array<glm::vec3, 20> positions{};
-    inline std::array<glm::vec3, 20> rotations{};
+    inline std::array<glm::vec3, n> positions{};
+    inline std::array<glm::vec3, n> rotations{};
     inline std::array<glm::vec3, 16> positions_floor{};
     
     inline const std::vector<Projection> projections = {
@@ -40,10 +42,10 @@ namespace Fresa::System
     
     struct SomeSystem : PhysicsUpdate<SomeSystem, PRIORITY_MOVEMENT>, RenderUpdate<SomeSystem> {
         inline static void update() {
-            /*Scene& s = scene_list.at(active_scene);
-            for (EntityID e : SceneView<Component::Test>(s)) {
-                log::info("%d %s", e, s.getName(e).c_str());
-            }*/
+            //Scene& s = scene_list.at(active_scene);
+            //for (EntityID e : SceneView<Component::Test>(s)) {
+            //    log::info("%d %s", e, s.getName(e).c_str());
+            //}
             
             //: Sample camera update
             if (Input::key_down(SDLK_d))
