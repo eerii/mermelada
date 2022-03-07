@@ -10,6 +10,8 @@
 
 #include "system_list.h"
 
+#include "serialization.h"
+
 using namespace Fresa;
 
 #ifdef __EMSCRIPTEN__

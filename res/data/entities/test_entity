@@ -1,0 +1,13 @@
+test
+---
+
+position:
+  x: 3
+  y: 10
+
+something:
+  a: 4.8
+  b: hello there
+  c: [3, 4]
+  d: [3.2, 8, 0.0, 9.1]
+  e: [naranja, manzana, plátano]
