@@ -10,7 +10,7 @@
 #include "reflection.h"
 
 struct VertexExample {
-    Serialize(VertexExample, pos);
+    Members(VertexExample, pos)
     glm::vec3 pos;
 };
     

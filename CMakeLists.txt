@@ -102,6 +102,9 @@ else()
     set(SDL2_INCLUDE_DIR ${SDL2_INCLUDE_DIRS}/..)
     message(STATUS "[INFO] SDL2 Include Dir ${SDL2_INCLUDE_DIR}")
     include_directories(${SDL2_INCLUDE_DIR})
+    if(LINUX)
+        include_directories(${SDL2_INCLUDE_DIRS}) # Temporary fix
+    endif()
 
     set(SDL2_LIBRARY_DIR ${SDL2_INCLUDE_DIR}/../lib)
     message(STATUS "[INFO] SDL2 Libraries ${SDL2_LIBRARIES}")

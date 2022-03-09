@@ -8,17 +8,17 @@
 #include "reflection.h"
 
 //: Follow the instructions on fresa/ecs/ecs.h to create a file like this
+//: Both member definitions are equivalent
 
 namespace Fresa::Component
 {
-    struct Position {
-        Serialize(Position, x, y)
+    struct Position : Reflection::Members<"x", "y"> {
         int x;
         int y;
     };
     
     struct Something {
-        Serialize(Something, a, b, c, d, e)
+        Members(Something, a, b, c, d, e)
         float a;
         str b;
         Vec2<int> c;

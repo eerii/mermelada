@@ -52,7 +52,12 @@ jobs:
         submodules: recursive
 
     - name: Update APT
-      run: sudo apt update
+      run: |
+            sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+            sudo apt update
+
+    - name: Install Clang (GCC currently has a bug that doesn't compile)
+      run: sudo apt install -y clang-12
 
     - name: Install SDL2
       run: sudo apt install -y libsdl2-dev
@@ -68,6 +73,9 @@ jobs:
         sudo apt install -y vulkan-sdk
 
     - name: Configure CMake
+      env:
+        CC: clang-12
+        CXX: clang++-12
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{matrix.build_config}}
 
     - name: Build (${{matrix.graphics_api}})
