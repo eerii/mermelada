@@ -7,6 +7,7 @@
 #include "scene.h"
 
 #include "log.h"
+#include "file.h"
 #include "input.h"
 #include "r_graphics.h"
 #include "f_time.h"

@@ -3,14 +3,12 @@
 //licensed under GPLv3 uwu
 
 #include "log.h"
-#include "game_config.h"
 #include "game.h"
 #include "scene.h"
-#include "file.h"
-
-#include "system_list.h"
-
 #include "serialization.h"
+
+#include "game_config.h"
+#include "system_list.h"
 
 using namespace Fresa;
 
@@ -28,22 +26,6 @@ int main (int argv, char** args) {
     //: Load scene
     SceneID scene = Serialization::loadScene("test_scene");
     active_scene = scene;
-    
-    for (EntityID e : SceneView<>(scene_list.at(scene))) {
-        log::info(scene_list.at(scene).getName(e));
-        for_<Component::ComponentType>([&](auto i){
-            using C = std::variant_alternative_t<i.value, Component::ComponentType>;
-            C* c = scene_list.at(scene).getComponent<C>(e);
-            if (c != nullptr) {
-                for_<Reflection::as_type_list<C>>([&](auto i){
-                    using M = std::variant_alternative_t<i.value, Reflection::as_type_list<C>>;
-                    M* m = Reflection::get_member_i<i.value, C>(c);
-                    log::info("%s:", C::member_names.at(i.value));
-                    log::info(*m);
-                });
-            }
-        });
-    }
     
     //: Update loop
     #ifdef __EMSCRIPTEN__
