@@ -16,7 +16,7 @@ Please keep in mind that right now the project is in the **very pre-alpha** stat
 
 The latest version of `clang` or `gcc` is recommended. On MacOS, you only need Xcode Command Line Tools. On Linux, use at least `gcc 11.2` or `clang 12`. If it is not installed, for Ubuntu you can use `apt install build-essential` and check the version with `gcc --version`. On Windows, you can use `mingw64`, which is equivalent to `gcc`, or a tool like Visual Studio.
 
-Check the (ci system)[https://github.com/josekoalas/aguacate/actions] to see an example of a complete implementation. I have tested it to work with:
+Check the [ci system](https://github.com/josekoalas/aguacate/actions) to see an example of a complete implementation. I have tested it to work with:
 
 | os                  | compiler           |
 | ------------------- | ------------------ |
