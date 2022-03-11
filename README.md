@@ -14,11 +14,23 @@ Please keep in mind that right now the project is in the **very pre-alpha** stat
 
 **C++20 Compiler**
 
-The latest version of `clang` or `gcc` is recommended. On MacOS, you only need Xcode Command Line Tools. On Linux, check that the version provided is recent, using `gcc --version`. If it is not installed, for Ubuntu you can use `apt install build-essential`. On Windows, you can use `mingw64`, which is equivalent to `gcc`, or a tool like Visual Studio.
+The latest version of `clang` or `gcc` is recommended. On MacOS, you only need Xcode Command Line Tools. On Linux, use at least `gcc 11.2` or `clang 12`. If it is not installed, for Ubuntu you can use `apt install build-essential` and check the version with `gcc --version`. On Windows, you can use `mingw64`, which is equivalent to `gcc`, or a tool like Visual Studio.
+
+Check the (ci system)[https://github.com/josekoalas/aguacate/actions] to see an example of a complete implementation. I have tested it to work with:
+
+| os                  | compiler           |
+| ------------------- | ------------------ |
+| ubuntu 20.04+       | clang 12           |
+| ubuntu 22.04+       | gcc 11.2           |
+| macos 11+           | apple clang 13     |
+| macos 11+           | xcode 13           |
+| windows server 2022 | visual studio 2022 |
+
+Lower versions may work, but they are untested and unsupported (specially `gcc 11.1` and previous versions, since there is an internal compiler error that prevents the program form compiling).
 
 **CMake**
 
-`Cmake` is our build system of choice. You can download it from the [official website](https://cmake.org/download/), which is probably the easiest way. If you are on MacOS and have homebrew installed, you can simply do `brew install cmake`. There is also a Debian/Ubuntu [repository](https://apt.kitware.com).
+`Cmake` is our build system of choice. You can download it from the [official website](https://cmake.org/download/), which is probably the easiest way. If you are on MacOS and have homebrew installed, you can simply do `brew install cmake`. In a recent Ubuntu distro you can use `apt install cmake` or `snap install cmake`.
 
 **SDL2**
 

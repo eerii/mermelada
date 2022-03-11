@@ -56,7 +56,7 @@ jobs:
             sudo add-apt-repository ppa:ubuntu-toolchain-r/test
             sudo apt update
 
-    - name: Install Clang (GCC currently has a bug that doesn't compile)
+    - name: Install Clang (GCC 11.2 fixes a bug, waiting for next LTS ubuntu release)
       run: sudo apt install -y clang-12
 
     - name: Install SDL2
