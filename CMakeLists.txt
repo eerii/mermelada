@@ -25,7 +25,7 @@ endif()
 
 # Emscripten flags
 if(EMSCRIPTEN)
-    set(EMSCRIPTEN_FLAGS "${EMSCRIPTEN_FLAGS} -s MAX_WEBGL_VERSION=2")
+    set(EMSCRIPTEN_FLAGS "${EMSCRIPTEN_FLAGS} -s MAX_WEBGL_VERSION=2 -O2")
     set(EMSCRIPTEN_FLAGS "${EMSCRIPTEN_FLAGS} --shell-file \"${PROJECT_SOURCE_DIR}/layout.html\"")
     set(CMAKE_EXECUTABLE_SUFFIX .html)
 
@@ -50,9 +50,9 @@ ENDMACRO()
 
 # Include search directories (Common)
 HEADER_DIRECTORIES(header_dir_list)
+list(FILTER header_dir_list EXCLUDE REGEX "deps\/")
 list(LENGTH header_dir_list header_dir_list_count)
 message(STATUS "[INFO] Found ${header_dir_list_count} header directories.")
-include_directories(${header_dir_list})
 
 # Get the source and header files
 file(GLOB_RECURSE header_list CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/fresa/*.h")
@@ -151,6 +151,8 @@ if(APPLE)
     link_libraries(${FoundationLib})
 endif()
 # ------------------------------------------------------------------------------
+
+include_directories(${header_dir_list})
 
 if(EMSCRIPTEN)
 # WEB TARGET
