@@ -6,6 +6,7 @@
 #include "game.h"
 #include "scene.h"
 #include "serialization.h"
+#include "audio.h"
 
 #include "game_config.h"
 #include "system_list.h"
@@ -25,6 +26,10 @@ int main (int argv, char** args) {
     
     //: Load scene
     active_scene = Serialization::loadScene("test_scene");
+    
+    //: AUDIO TEST
+    Audio::SoundID sound = Audio::load("test.wav", 1);
+    Audio::play(sound);
     
     //: Update loop
     #ifdef __EMSCRIPTEN__
