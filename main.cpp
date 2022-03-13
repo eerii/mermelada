@@ -25,7 +25,7 @@ int main (int argv, char** args) {
     bool running = Game::init();
     
     //: Load scene
-    active_scene = Serialization::loadScene("test_scene");
+    active_scene = registerScene("");
     
     //: Update loop
     #ifdef __EMSCRIPTEN__

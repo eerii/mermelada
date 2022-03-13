@@ -37,8 +37,8 @@ namespace Fresa::System
             camera.pos.z = 500.0f;
             camera.proj_type = projections.at(proj_i);
             
-            auto vertices = Serialization::loadOBJ("test");
-            draw_id_test = getDrawID(Vertices::cube_color, Indices::cube, "draw_color");
+            auto [vertices, indices] = Serialization::loadOBJ("test");
+            draw_id_test = getDrawID(vertices, indices, "draw_obj");
         }
         
         inline static void update() {
@@ -77,7 +77,7 @@ namespace Fresa::System
         inline static void render() {
             float t = sec(time() - start_time);
             
-            glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 40.0f * std::sin(t * 1.571f), -100.0f));
+            glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 40.0f * std::sin(t * 1.571f) + 80.0f, -100.0f));
             model = glm::scale(model, glm::vec3(1.0f) * 100.0f);
             model = glm::rotate(model, t * 1.571f, glm::vec3(0.0f, 1.0f, 0.0f));
             draw(draw_id_test, model);
