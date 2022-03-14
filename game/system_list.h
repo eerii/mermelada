@@ -20,7 +20,8 @@ namespace Fresa::System
     //: Example of a hardcoded render system
     //: This is very basic and not elegant, it will be reworked in the future
     
-    inline DrawID draw_id_test;
+    inline DrawDescription draw_test;
+    inline DrawDescription draw_i;
     
     inline Clock::time_point start_time = time();
     
@@ -38,7 +39,16 @@ namespace Fresa::System
             camera.proj_type = projections.at(proj_i);
             
             auto [vertices, indices] = Serialization::loadOBJ("test");
-            draw_id_test = getDrawID(vertices, indices, "draw_obj");
+            draw_test = getDrawDescription<UniformBufferObject>(vertices, indices, "draw_obj");
+            
+            std::vector<VertexExample> per_instance(1000);
+            for (auto &i : per_instance) {
+                float r = std::sqrt((float)(rand() % 100) / 100.0f) * 200.0f;
+                float theta = (float)(rand() % 628) / 100.0f - 3.14f;
+                float phi = (float)(rand() % 628) / 100.0f - 3.14f;
+                i.pos = glm::vec3(std::cos(theta) * std::sin(phi), std::sin(theta) * std::sin(phi), std::cos(phi)) * r;
+            }
+            draw_i = getDrawDescriptionI<UniformBufferObject>(Vertices::cube_color, per_instance, Indices::cube, "draw_color_i");
         }
         
         inline static void update() {
@@ -77,10 +87,16 @@ namespace Fresa::System
         inline static void render() {
             float t = sec(time() - start_time);
             
-            glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 40.0f * std::sin(t * 1.571f) + 80.0f, -100.0f));
-            model = glm::scale(model, glm::vec3(1.0f) * 100.0f);
+            
+            glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(150.0f, 40.0f * std::sin(t * 1.571f), -100.0f));
+            model = glm::scale(model, glm::vec3(1.0f) * 80.0f);
+            model = glm::rotate(model, -t * 1.571f, glm::vec3(0.0f, 1.0f, 0.0f));
+            draw(draw_test, model);
+            
+            model = glm::translate(glm::mat4(1.0f), glm::vec3(-250.0f, 40.0f * std::sin(t * 1.571f), -100.0f));
+            model = glm::scale(model, glm::vec3(1.0f) * 10.0f);
             model = glm::rotate(model, t * 1.571f, glm::vec3(0.0f, 1.0f, 0.0f));
-            draw(draw_id_test, model);
+            draw(draw_i, model);
         }
     };
 }

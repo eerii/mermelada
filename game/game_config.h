@@ -16,7 +16,7 @@
 using namespace Fresa;
 
 const str Config::name = "Proxecto Fresa";
-const ui8 Config::version[3] = {0, 3, 9};
+const ui8 Config::version[3] = {0, 3, 11};
 const Vec2<ui32> Config::window_size = {1024, 720};
 const Vec2<ui32> Config::resolution = {256, 180};
 
