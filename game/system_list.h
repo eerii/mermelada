@@ -22,6 +22,7 @@ namespace Fresa::System
     
     inline DrawDescription draw_test;
     inline DrawDescription draw_i;
+    inline DrawDescription draw_i2;
     
     inline Clock::time_point start_time = time();
     
@@ -49,6 +50,15 @@ namespace Fresa::System
                 i.pos = glm::vec3(std::cos(theta) * std::sin(phi), std::sin(theta) * std::sin(phi), std::cos(phi)) * r;
             }
             draw_i = getDrawDescriptionI<UniformBufferObject>(Vertices::cube_color, per_instance, Indices::cube, "draw_color_i");
+            
+            std::vector<VertexExample> per_instance2(500);
+            for (auto &i : per_instance2) {
+                float r = std::sqrt((float)(rand() % 100) / 100.0f) * 100.0f;
+                float theta = (float)(rand() % 628) / 100.0f - 3.14f;
+                float phi = (float)(rand() % 628) / 100.0f - 3.14f;
+                i.pos = glm::vec3(std::cos(theta) * std::sin(phi), std::sin(theta) * std::sin(phi), std::cos(phi)) * r;
+            }
+            draw_i2 = getDrawDescriptionI<UniformBufferObject>(Vertices::rect3_color, per_instance2, Indices::rect, "draw_color_i");
         }
         
         inline static void update() {
@@ -87,16 +97,29 @@ namespace Fresa::System
         inline static void render() {
             float t = sec(time() - start_time);
             
+            setGlobalUniform<UniformBufferObject, "view">(camera.view);
+            setGlobalUniform<UniformBufferObject, "proj">(camera.proj);
+                
+            UniformBufferObject ubo{};
             
-            glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(150.0f, 40.0f * std::sin(t * 1.571f), -100.0f));
-            model = glm::scale(model, glm::vec3(1.0f) * 80.0f);
-            model = glm::rotate(model, -t * 1.571f, glm::vec3(0.0f, 1.0f, 0.0f));
-            draw(draw_test, model);
+            ubo.model = glm::translate(glm::mat4(1.0f), glm::vec3(150.0f, 40.0f * std::sin(t * 1.571f), -100.0f));
+            ubo.model = glm::scale(ubo.model, glm::vec3(1.0f) * 80.0f);
+            ubo.model = glm::rotate(ubo.model, -t * 1.571f, glm::vec3(0.0f, 1.0f, 0.0f));
+            draw(draw_test, ubo);
             
-            model = glm::translate(glm::mat4(1.0f), glm::vec3(-250.0f, 40.0f * std::sin(t * 1.571f), -100.0f));
-            model = glm::scale(model, glm::vec3(1.0f) * 10.0f);
-            model = glm::rotate(model, t * 1.571f, glm::vec3(0.0f, 1.0f, 0.0f));
-            draw(draw_i, model);
+            UniformBufferObject ubo2 = ubo;
+            
+            ubo2.model = glm::translate(glm::mat4(1.0f), glm::vec3(-250.0f, 40.0f * std::sin(t * 1.571f), -100.0f));
+            ubo2.model = glm::scale(ubo2.model, glm::vec3(1.0f) * 10.0f);
+            ubo2.model = glm::rotate(ubo2.model, t * 1.571f, glm::vec3(0.0f, 1.0f, 0.0f));
+            draw(draw_i, ubo2);
+            
+            UniformBufferObject ubo3 = ubo;
+            
+            ubo3.model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 40.0f * std::sin(t * 1.571f) - 100.0f, -100.0f));
+            ubo3.model = glm::scale(ubo3.model, glm::vec3(1.0f) * 10.0f);
+            ubo3.model = glm::rotate(ubo3.model, t * 1.571f, glm::vec3(0.0f, 1.0f, 0.0f));
+            draw(draw_i2, ubo3);
         }
     };
 }

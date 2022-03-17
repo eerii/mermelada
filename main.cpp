@@ -27,9 +27,6 @@ int main (int argv, char** args) {
     //: Load scene
     active_scene = registerScene("");
     
-    //: TEST
-    auto a = Graphics::API::getAttributeDescriptions<VertexPos3Color, VertexExample>();
-    
     //: Update loop
     #ifdef __EMSCRIPTEN__
     while (true)
