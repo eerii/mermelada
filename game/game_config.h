@@ -24,6 +24,10 @@ const float Config::timestep = 10.0f;
 float Config::game_speed = 1.0f;
 
 str Config::renderer_description_path = "render/renderer_description";
+#if defined USE_VULKAN
+bool Config::draw_indirect = true;
+#elif defined USE_OPENGL
 bool Config::draw_indirect = false;
+#endif
 
 #endif
