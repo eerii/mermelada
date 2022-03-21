@@ -10,8 +10,9 @@
 #include "reflection.h"
 
 struct VertexExample {
-    Members(VertexExample, pos)
+    Members(VertexExample, pos, something)
     glm::vec3 pos;
+    float something;
 };
     
 using CustomVertexType = std::variant<VertexExample>;

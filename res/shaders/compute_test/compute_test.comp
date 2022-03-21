@@ -1,0 +1,32 @@
+#version 450
+
+layout (local_size_x = 256) in;
+
+layout(std430, binding = 0) buffer PositionBuffer {
+    vec4 positions[];
+} pos_buffer;
+// Aligned to vec4, in this case we have a vec3 for positions and an extra which we can use for colors or something
+
+uint hash_i(uint x) {
+    x ^= x >> 16;
+    x *= 0x7feb352dU;
+    x ^= x >> 15;
+    x *= 0x846ca68bU;
+    x ^= x >> 16;
+    return x;
+}
+
+float hash(uint x) {
+    return float(hash_i(x)) / float(0xffffffffU);
+}
+
+void main() {
+    uint gID = gl_GlobalInvocationID.x;
+    
+    float r = sqrt(hash(gID)) * 120.0;
+    float theta = 3.141592 * hash(gID + 0x6857499cU);
+    float phi = 6.283184 * hash(gID + 0xc2ab5fb0U);
+    pos_buffer.positions[gID].xyz = vec3(cos(theta) * sin(phi), sin(theta) * sin(phi), cos(phi)) * r;
+    
+    pos_buffer.positions[gID].w = hash(gID + 0x32f759f1U) * 3.0;
+}
