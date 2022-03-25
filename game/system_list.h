@@ -33,11 +33,17 @@ namespace Fresa::System
     };
     inline int proj_i = 2;
     
-    struct SomeSystem : SystemInit<SomeSystem>, PhysicsUpdate<SomeSystem, PRIORITY_MOVEMENT>, RenderUpdate<SomeSystem> {
+    inline float phi = -1.57f;
+    inline float theta = 0.0f;
+    inline const glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+    
+    inline Vec2<int> previous_mouse_pos;
+    inline float mouse_sensitivity = 0.003f;
+    
+    inline bool paused = false;
+    
+    struct SomeSystem : SystemInit<SomeSystem>, RenderUpdate<SomeSystem> {
         inline static void init() {
-            camera.pos.z = 500.0f;
-            camera.proj_type = projections.at(proj_i);
-            
             auto [vertices, indices] = Serialization::loadOBJ("test");
             draw_test = getDrawDescription<UniformBufferObject>(vertices, indices, "draw_obj");
             
@@ -56,39 +62,6 @@ namespace Fresa::System
                 }
                 return per_instance;
             });
-        }
-        
-        inline static void update() {
-            //: Sample camera update
-            if (Input::key_down(SDLK_d))
-                camera.pos.x += 300.0f * Time::physics_delta;
-            if (Input::key_down(SDLK_a))
-                camera.pos.x -= 300.0f * Time::physics_delta;
-            
-            if (camera.proj_type & PROJECTION_PERSPECTIVE) {
-                if (Input::key_down(SDLK_q))
-                    camera.pos.y += 300.0f * Time::physics_delta;
-                if (Input::key_down(SDLK_e))
-                    camera.pos.y -= 300.0f * Time::physics_delta;
-                if (Input::key_down(SDLK_w))
-                    camera.pos.z -= 300.0f * Time::physics_delta;
-                if (Input::key_down(SDLK_s))
-                    camera.pos.z += 300.0f * Time::physics_delta;
-            } else {
-                if (Input::key_down(SDLK_w))
-                    camera.pos.y -= 300.0f * Time::physics_delta;
-                if (Input::key_down(SDLK_s))
-                    camera.pos.y += 300.0f * Time::physics_delta;
-            }
-            
-            if (Input::key_pressed(SDLK_TAB)) {
-                proj_i = (proj_i + 1) % projections.size();
-                camera.proj_type = projections.at(proj_i);
-                updateCameraProjection(camera);
-                win.scaled_ubo = (camera.proj_type & PROJECTION_SCALED) ?
-                                            API::getScaledWindowUBO(win) :
-                                            UniformBufferObject{glm::mat4(1.0f),glm::mat4(1.0f),glm::mat4(1.0f)};
-            }
         }
         
         inline static void render() {
@@ -110,6 +83,78 @@ namespace Fresa::System
             ubo2.model = glm::scale(ubo2.model, glm::vec3(1.0f) * 10.0f);
             ubo2.model = glm::rotate(ubo2.model, t * 1.571f, glm::vec3(0.0f, 1.0f, 0.0f));
             draw(draw_i, ubo2);
+        }
+    };
+    
+    struct CameraSystem : SystemInit<CameraSystem>, PhysicsUpdate<CameraSystem, PRIORITY_MOVEMENT> {
+        inline static void init() {
+            camera.pos.z = 500.0f;
+            camera.proj_type = projections.at(proj_i);
+            camera.direction = glm::normalize(glm::vec3(std::cos(phi) * std::cos(theta), std::sin(theta), std::sin(phi) * std::cos(theta)));
+        }
+        
+        inline static void update() {
+            if (Input::key_pressed(SDLK_ESCAPE))
+                paused = not paused;
+            
+            if (Input::mouse_pressed(Input::MouseButton::Left)) {
+                previous_mouse_pos = Input::mouse.position;
+            }
+            
+            if (Input::mouse_down(Input::MouseButton::Left)) {
+                Vec2<int> mouse_delta = Input::mouse.position - previous_mouse_pos;
+                previous_mouse_pos = Input::mouse.position;
+                
+                phi -= mouse_delta.x * mouse_sensitivity;
+                theta -= mouse_delta.y * mouse_sensitivity;
+                theta = std::clamp(theta, -1.0f, 1.0f);
+                
+                camera.direction = glm::normalize(glm::vec3(std::cos(phi) * std::cos(theta), std::sin(theta), std::sin(phi) * std::cos(theta)));
+            }
+            
+            if (not paused) {
+                glm::vec3 camera_right = glm::normalize(glm::cross(up, camera.direction));
+                glm::vec3 camera_up = glm::cross(camera.direction, camera_right);
+                
+                float camera_speed = 500.0f * Time::physics_delta;
+                
+                if (camera.proj_type & PROJECTION_PERSPECTIVE) {
+                    if (Input::key_down(SDLK_w))
+                        camera.pos += camera_speed * glm::vec3(camera.direction.x, 0, camera.direction.z);
+                    if (Input::key_down(SDLK_s))
+                        camera.pos -= camera_speed * glm::vec3(camera.direction.x, 0, camera.direction.z);
+                    
+                    if (Input::key_down(SDLK_d))
+                        camera.pos += camera_speed * glm::normalize(glm::cross(camera.direction, camera_up));
+                    if (Input::key_down(SDLK_a))
+                        camera.pos -= camera_speed * glm::normalize(glm::cross(camera.direction, camera_up));
+                    
+                    if (Input::key_down(SDLK_q))
+                        camera.pos.y += camera_speed;
+                    if (Input::key_down(SDLK_e))
+                        camera.pos.y -= camera_speed;
+                } else {
+                    if (Input::key_down(SDLK_w))
+                        camera.pos.y -= camera_speed;
+                    if (Input::key_down(SDLK_s))
+                        camera.pos.y += camera_speed;
+                    
+                    if (Input::key_down(SDLK_d))
+                        camera.pos.x += camera_speed;
+                    if (Input::key_down(SDLK_a))
+                        camera.pos.x -= camera_speed;
+                }
+                
+                camera.view = glm::lookAt(camera.pos, camera.pos + camera.direction, camera_up);
+            }
+            
+            if (Input::key_pressed(SDLK_TAB)) {
+                proj_i = (proj_i + 1) % projections.size();
+                camera.proj_type = projections.at(proj_i);
+                updateCameraProjection(camera);
+                win.scaled_ubo = (camera.proj_type & PROJECTION_SCALED) ?
+                                  API::getScaledWindowUBO(win) : UniformBufferObject{glm::mat4(1.0f),glm::mat4(1.0f),glm::mat4(1.0f)};
+            }
         }
     };
 }
