@@ -29,5 +29,6 @@ bool Config::draw_indirect = true;
 #elif defined USE_OPENGL
 bool Config::draw_indirect = false;
 #endif
+ui8 Config::multisampling = 0;
 
 #endif
