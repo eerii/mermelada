@@ -24,6 +24,7 @@ r             [s_window]
 d draw_color   s_draw    pos3color
 d draw_tex     s_draw    pos3uv
 d draw_obj     s_draw    obj
+d draw_light   s_draw    obj
 d draw_color_i s_draw    pos3color   example
 p post         s_post    pos2
 p window       s_window  pos2

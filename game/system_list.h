@@ -20,8 +20,8 @@ namespace Fresa::System
     //: Example of a hardcoded render system
     //: This is very basic and not elegant, it will be reworked in the future
     
-    inline DrawDescription draw_test;
-    inline DrawDescription draw_i;
+    inline DrawDescription draw_cube;
+    inline DrawDescription draw_plane;
     
     inline Clock::time_point start_time = time();
     
@@ -42,11 +42,23 @@ namespace Fresa::System
     
     inline bool paused = false;
     
+    struct LightBuffer { //: TODO: FIX PADDING IN UNIFORMS
+        Members(LightBuffer, model, view, proj, light_dir, _1, camera_pos, _2, color)
+        glm::mat4 model;
+        glm::mat4 view;
+        glm::mat4 proj;
+        glm::vec3 light_dir; float _1;
+        glm::vec3 camera_pos; float _2;
+        glm::vec3 color;
+    };
+    
     struct SomeSystem : SystemInit<SomeSystem>, RenderUpdate<SomeSystem> {
         inline static void init() {
             auto [vertices, indices] = Serialization::loadOBJ("test");
-            draw_test = getDrawDescription<UniformBufferObject>(vertices, indices, "draw_obj");
+            draw_cube = getDrawDescription<LightBuffer>(vertices, indices, "draw_light");
+            draw_plane = getDrawDescription<LightBuffer>(vertices, indices, "draw_light");
             
+            /*//: Instancing
             std::vector<VertexExample> per_instance(1000);
             draw_i = getDrawDescriptionI<UniformBufferObject>(Vertices::cube_color, per_instance, Indices::cube, "draw_color_i");
             
@@ -61,36 +73,38 @@ namespace Fresa::System
                     i.something = (float)(rand() % 300) / 100.0f;
                 }
                 return per_instance;
-            });
+            });*/
         }
         
         inline static void render() {
             float t = sec(time() - start_time);
             
-            setGlobalUniform<UniformBufferObject, "view">(camera.view);
-            setGlobalUniform<UniformBufferObject, "proj">(camera.proj);
+            setGlobalUniform<LightBuffer, "view">(camera.view);
+            setGlobalUniform<LightBuffer, "proj">(camera.proj);
+            setGlobalUniform<LightBuffer, "light_dir">(glm::vec3(1.0f, 0.5f, -0.3f));
+            setGlobalUniform<LightBuffer, "camera_pos">(camera.pos);
                 
-            UniformBufferObject ubo{};
-            
-            ubo.model = glm::translate(glm::mat4(1.0f), glm::vec3(150.0f, 40.0f * std::sin(t * 1.571f), -100.0f));
-            ubo.model = glm::scale(ubo.model, glm::vec3(1.0f) * 80.0f);
+            LightBuffer ubo{};
+            ubo.model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -50.0f, 0.0f));
+            ubo.model = glm::scale(ubo.model, glm::vec3(80.0f));
             ubo.model = glm::rotate(ubo.model, -t * 1.571f, glm::vec3(0.0f, 1.0f, 0.0f));
-            draw(draw_test, ubo);
+            ubo.color = glm::vec3(0.5, 0.5, 1.0);
+            draw(draw_cube, ubo);
             
-            UniformBufferObject ubo2{};
-            
-            ubo2.model = glm::translate(glm::mat4(1.0f), glm::vec3(-150.0f, 40.0f * std::sin(t * 1.571f), -100.0f));
-            ubo2.model = glm::scale(ubo2.model, glm::vec3(1.0f) * 10.0f);
-            ubo2.model = glm::rotate(ubo2.model, t * 1.571f, glm::vec3(0.0f, 1.0f, 0.0f));
-            draw(draw_i, ubo2);
+            LightBuffer ubo2{};
+            ubo2.model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 100.0f, 0.0f));
+            ubo2.model = glm::scale(ubo2.model, glm::vec3(300.0f, 10.0f, 300.0f));
+            ubo2.color = glm::vec3(1.0, 0.5, 0.5);
+            draw(draw_plane, ubo2);
         }
     };
     
     struct CameraSystem : SystemInit<CameraSystem>, PhysicsUpdate<CameraSystem, PRIORITY_MOVEMENT> {
         inline static void init() {
-            camera.pos.z = 500.0f;
+            camera.pos = glm::vec3(-340.f, -40.f, 680.f);
+            camera.direction = glm::vec3(0.47f, 0.03f, -0.87f);
+            //camera.direction = glm::normalize(glm::vec3(std::cos(phi) * std::cos(theta), std::sin(theta), std::sin(phi) * std::cos(theta)));
             camera.proj_type = projections.at(proj_i);
-            camera.direction = glm::normalize(glm::vec3(std::cos(phi) * std::cos(theta), std::sin(theta), std::sin(phi) * std::cos(theta)));
         }
         
         inline static void update() {
