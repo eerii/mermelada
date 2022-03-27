@@ -6,8 +6,8 @@
 
 ### main render pass
 
-a a_color     color_input         win
-a a_depth     depth               win
+a a_color     color_input_msaa    win
+a a_depth     depth_msaa          win
 a a_post      color_external      win
 s s_draw      [a_color a_depth]
 s s_post      [a_color a_post]
