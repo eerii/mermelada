@@ -22,6 +22,7 @@ namespace Fresa::System
     
     inline DrawDescription draw_cube;
     inline DrawDescription draw_plane;
+    inline DrawDescription draw_light;
     
     inline Clock::time_point start_time = time();
     
@@ -42,21 +43,29 @@ namespace Fresa::System
     
     inline bool paused = false;
     
-    struct LightBuffer { //: TODO: FIX PADDING IN UNIFORMS
-        Members(LightBuffer, model, view, proj, light_dir, _1, camera_pos, _2, color)
+    struct ObjectBuffer { //: TODO: FIX PADDING IN UNIFORMS
+        Members(ObjectBuffer, model, view, proj, camera_pos, _, color)
         glm::mat4 model;
         glm::mat4 view;
         glm::mat4 proj;
-        glm::vec3 light_dir; float _1;
-        glm::vec3 camera_pos; float _2;
+        glm::vec3 camera_pos; float _;
         glm::vec3 color;
+    };
+    
+    struct LightBuffer {
+        Members(LightBuffer, directional_light, point_lights, point_light_colors, point_light_count)
+        glm::vec4 directional_light;
+        std::array<glm::vec4, 16> point_lights;
+        std::array<glm::vec4, 16> point_light_colors;
+        int point_light_count;
     };
     
     struct SomeSystem : SystemInit<SomeSystem>, RenderUpdate<SomeSystem> {
         inline static void init() {
             auto [vertices, indices] = Serialization::loadOBJ("test");
-            draw_cube = getDrawDescription<LightBuffer>(vertices, indices, "draw_light");
-            draw_plane = getDrawDescription<LightBuffer>(vertices, indices, "draw_light");
+            draw_cube = getDrawDescription<ObjectBuffer, LightBuffer>(vertices, indices, "draw_light");
+            draw_plane = getDrawDescription<ObjectBuffer, LightBuffer>(vertices, indices, "draw_light");
+            draw_light = getDrawDescription<UniformBufferObject>(vertices, indices, "draw_obj");
             
             /*//: Instancing
             std::vector<VertexExample> per_instance(1000);
@@ -79,23 +88,43 @@ namespace Fresa::System
         inline static void render() {
             float t = sec(time() - start_time);
             
-            setGlobalUniform<LightBuffer, "view">(camera.view);
-            setGlobalUniform<LightBuffer, "proj">(camera.proj);
-            setGlobalUniform<LightBuffer, "light_dir">(glm::vec3(1.0f, 0.5f, -0.3f));
-            setGlobalUniform<LightBuffer, "camera_pos">(camera.pos);
-                
-            LightBuffer ubo{};
+            setGlobalUniform<ObjectBuffer, "view">(camera.view);
+            setGlobalUniform<ObjectBuffer, "proj">(camera.proj);
+            setGlobalUniform<ObjectBuffer, "camera_pos">(camera.pos);
+            
+            setGlobalUniform<LightBuffer, "directional_light">(glm::vec4(1.0f, 0.5f, -0.3f, 0.5f));
+            setGlobalUniform<LightBuffer, "point_light_count">(1);
+            
+            std::array<glm::vec4, 16> point_lights;
+            point_lights[0] = glm::vec4(0.0f, -30.0f, 250.0f, 500.0f);
+            setGlobalUniform<LightBuffer, "point_lights">(point_lights);
+            
+            std::array<glm::vec4, 16> point_light_colors;
+            point_light_colors[0] = glm::vec4(1.0f, 0.6f, 0.8f, 1.0f);
+            setGlobalUniform<LightBuffer, "point_light_colors">(point_light_colors);
+            
+            LightBuffer light{};
+            
+            ObjectBuffer ubo{};
             ubo.model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -50.0f, 0.0f));
             ubo.model = glm::scale(ubo.model, glm::vec3(80.0f));
             ubo.model = glm::rotate(ubo.model, -t * 1.571f, glm::vec3(0.0f, 1.0f, 0.0f));
             ubo.color = glm::vec3(0.5, 0.5, 1.0);
-            draw(draw_cube, ubo);
+            draw(draw_cube, ubo, light);
             
-            LightBuffer ubo2{};
+            ObjectBuffer ubo2{};
             ubo2.model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 100.0f, 0.0f));
             ubo2.model = glm::scale(ubo2.model, glm::vec3(300.0f, 10.0f, 300.0f));
             ubo2.color = glm::vec3(1.0, 0.5, 0.5);
-            draw(draw_plane, ubo2);
+            draw(draw_plane, ubo2, light);
+            
+            setGlobalUniform<UniformBufferObject, "view">(camera.view);
+            setGlobalUniform<UniformBufferObject, "proj">(camera.proj);
+            
+            UniformBufferObject ubo3{};
+            ubo3.model = glm::translate(glm::mat4(1.0f), glm::vec3(point_lights[0].x, point_lights[0].y, point_lights[0].z));
+            ubo3.model = glm::scale(ubo3.model, glm::vec3(10.0f));
+            draw(draw_light, ubo3);
         }
     };
     
