@@ -14,5 +14,10 @@ struct VertexExample {
     glm::vec3 pos;
     float something;
 };
+
+struct VertexModel {
+    Members(VertexModel, model)
+    glm::mat4 model;
+};
     
-using CustomVertexType = std::variant<VertexExample>;
+using CustomVertexType = std::variant<VertexExample, VertexModel>;
