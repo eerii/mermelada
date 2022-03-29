@@ -92,16 +92,16 @@ namespace Fresa::System
             setGlobalUniform<ObjectBuffer, "proj">(camera.proj);
             setGlobalUniform<ObjectBuffer, "camera_pos">(camera.pos);
             
-            setGlobalUniform<LightBuffer, "directional_light">(glm::vec4(1.0f, 0.5f, -0.3f, 0.5f));
+            setGlobalUniform<LightBuffer, "directional_light">(glm::vec4(1.0f, 0.5f, -0.3f, 1.0f));
             setGlobalUniform<LightBuffer, "point_light_count">(1);
             
-            std::array<glm::vec4, 16> point_lights;
+            /*std::array<glm::vec4, 16> point_lights;
             point_lights[0] = glm::vec4(0.0f, -30.0f, 250.0f, 500.0f);
             setGlobalUniform<LightBuffer, "point_lights">(point_lights);
             
             std::array<glm::vec4, 16> point_light_colors;
             point_light_colors[0] = glm::vec4(1.0f, 0.6f, 0.8f, 1.0f);
-            setGlobalUniform<LightBuffer, "point_light_colors">(point_light_colors);
+            setGlobalUniform<LightBuffer, "point_light_colors">(point_light_colors);*/
             
             LightBuffer light{};
             
@@ -122,7 +122,7 @@ namespace Fresa::System
             setGlobalUniform<UniformBufferObject, "proj">(camera.proj);
             
             UniformBufferObject ubo3{};
-            ubo3.model = glm::translate(glm::mat4(1.0f), glm::vec3(point_lights[0].x, point_lights[0].y, point_lights[0].z));
+            ubo3.model = glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 0.5f, -0.3f) * (-300.0f));
             ubo3.model = glm::scale(ubo3.model, glm::vec3(10.0f));
             draw(draw_light, ubo3);
         }
