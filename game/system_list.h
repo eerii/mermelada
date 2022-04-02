@@ -26,17 +26,13 @@ namespace Fresa::System
     
     inline Clock::time_point start_time = time();
     
-    inline const std::vector<Projection> projections = {
+    inline const std::vector<CameraProjection> projections = {
         PROJECTION_ORTHOGRAPHIC,
-        Projection(PROJECTION_ORTHOGRAPHIC | PROJECTION_SCALED),
+        CameraProjection(PROJECTION_ORTHOGRAPHIC | PROJECTION_SCALED),
         PROJECTION_PERSPECTIVE,
-        Projection(PROJECTION_PERSPECTIVE | PROJECTION_SCALED),
+        CameraProjection(PROJECTION_PERSPECTIVE | PROJECTION_SCALED),
     };
     inline int proj_i = 2;
-    
-    inline float phi = -1.57f;
-    inline float theta = 0.0f;
-    inline const glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
     
     inline Vec2<int> previous_mouse_pos;
     inline float mouse_sensitivity = 0.003f;
@@ -72,7 +68,7 @@ namespace Fresa::System
             draw_i = getDrawDescriptionI<UniformBufferObject>(Vertices::cube_color, per_instance, Indices::cube, "draw_color_i");
             
             //: Compute test
-            API::updateBufferFromCompute<VertexExample>(api, API::instanced_buffer_data.at(draw_i.instance).instance_buffer, 1000, "compute_test", [](){
+            updateBufferFromCompute<VertexExample>(api, instanced_buffer_data.at(draw_i.instance).instance_buffer, 1000, "compute_test", [](){
                 std::vector<VertexExample> per_instance(1000);
                 for (auto &i : per_instance) {
                     float r = std::sqrt((float)(rand() % 1000) / 1000.0f) * 120.0f;
@@ -88,8 +84,9 @@ namespace Fresa::System
         inline static void render() {
             float t = sec(time() - start_time);
             
-            setGlobalUniform<ObjectBuffer, "view">(camera.view);
-            setGlobalUniform<ObjectBuffer, "proj">(camera.proj);
+            CameraTransform camera_transform = Camera::getTransform(); //: TODO: Improve how this is handled
+            setGlobalUniform<ObjectBuffer, "view">(camera_transform.view);
+            setGlobalUniform<ObjectBuffer, "proj">(camera_transform.proj);
             setGlobalUniform<ObjectBuffer, "camera_pos">(camera.pos);
             
             setGlobalUniform<LightBuffer, "directional_light">(glm::vec4(1.0f, 0.5f, -0.3f, 1.0f));
@@ -118,8 +115,8 @@ namespace Fresa::System
             ubo2.color = glm::vec3(1.0, 0.5, 0.5);
             draw(draw_plane, ubo2, light);
             
-            setGlobalUniform<UniformBufferObject, "view">(camera.view);
-            setGlobalUniform<UniformBufferObject, "proj">(camera.proj);
+            setGlobalUniform<UniformBufferObject, "view">(camera_transform.view);
+            setGlobalUniform<UniformBufferObject, "proj">(camera_transform.proj);
             
             UniformBufferObject ubo3{};
             ubo3.model = glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 0.5f, -0.3f) * (-300.0f));
@@ -130,10 +127,7 @@ namespace Fresa::System
     
     struct CameraSystem : SystemInit<CameraSystem>, PhysicsUpdate<CameraSystem, PRIORITY_MOVEMENT> {
         inline static void init() {
-            camera.pos = glm::vec3(-340.f, -40.f, 680.f);
-            camera.direction = glm::vec3(0.47f, 0.03f, -0.87f);
-            //camera.direction = glm::normalize(glm::vec3(std::cos(phi) * std::cos(theta), std::sin(theta), std::sin(phi) * std::cos(theta)));
-            camera.proj_type = projections.at(proj_i);
+            camera = Camera::create(projections.at(proj_i), glm::vec3(-340.f, -40.f, 680.f), 5.23f, 0.06f);
         }
         
         inline static void update() {
@@ -148,29 +142,28 @@ namespace Fresa::System
                 Vec2<int> mouse_delta = Input::mouse.position - previous_mouse_pos;
                 previous_mouse_pos = Input::mouse.position;
                 
-                phi -= mouse_delta.x * mouse_sensitivity;
-                theta -= mouse_delta.y * mouse_sensitivity;
-                theta = std::clamp(theta, -1.0f, 1.0f);
-                
-                camera.direction = glm::normalize(glm::vec3(std::cos(phi) * std::cos(theta), std::sin(theta), std::sin(phi) * std::cos(theta)));
+                camera.phi -= mouse_delta.x * mouse_sensitivity;
+                camera.theta -= mouse_delta.y * mouse_sensitivity;
+                camera.theta = std::clamp(camera.theta, -1.0f, 1.0f);
             }
             
             if (not paused) {
-                glm::vec3 camera_right = glm::normalize(glm::cross(up, camera.direction));
-                glm::vec3 camera_up = glm::cross(camera.direction, camera_right);
-                
                 float camera_speed = 500.0f * Time::physics_delta;
                 
-                if (camera.proj_type & PROJECTION_PERSPECTIVE) {
+                if (camera.projection & PROJECTION_PERSPECTIVE) {
+                    glm::vec3 direction = Camera::getDirection();
+                    glm::vec3 camera_right = glm::normalize(glm::cross(glm::vec3(0.f, 1.f, 0.f), direction));
+                    glm::vec3 camera_up = glm::cross(direction, camera_right);
+                    
                     if (Input::key_down(SDLK_w))
-                        camera.pos += camera_speed * glm::vec3(camera.direction.x, 0, camera.direction.z);
+                        camera.pos += camera_speed * glm::vec3(direction.x, 0, direction.z);
                     if (Input::key_down(SDLK_s))
-                        camera.pos -= camera_speed * glm::vec3(camera.direction.x, 0, camera.direction.z);
+                        camera.pos -= camera_speed * glm::vec3(direction.x, 0, direction.z);
                     
                     if (Input::key_down(SDLK_d))
-                        camera.pos += camera_speed * glm::normalize(glm::cross(camera.direction, camera_up));
+                        camera.pos += camera_speed * glm::normalize(glm::cross(direction, camera_up));
                     if (Input::key_down(SDLK_a))
-                        camera.pos -= camera_speed * glm::normalize(glm::cross(camera.direction, camera_up));
+                        camera.pos -= camera_speed * glm::normalize(glm::cross(direction, camera_up));
                     
                     if (Input::key_down(SDLK_q))
                         camera.pos.y += camera_speed;
@@ -187,16 +180,11 @@ namespace Fresa::System
                     if (Input::key_down(SDLK_a))
                         camera.pos.x -= camera_speed;
                 }
-                
-                camera.view = glm::lookAt(camera.pos, camera.pos + camera.direction, camera_up);
             }
             
             if (Input::key_pressed(SDLK_TAB)) {
                 proj_i = (proj_i + 1) % projections.size();
-                camera.proj_type = projections.at(proj_i);
-                updateCameraProjection(camera);
-                win.scaled_ubo = (camera.proj_type & PROJECTION_SCALED) ?
-                                  API::getScaledWindowUBO(win) : UniformBufferObject{glm::mat4(1.0f),glm::mat4(1.0f),glm::mat4(1.0f)};
+                camera.projection = projections.at(proj_i);
             }
         }
     };
