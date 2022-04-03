@@ -131,7 +131,7 @@ jobs:
         path: bin/${{matrix.graphics_api}}/*
 
   windows:
-    runs-on: windows-2022
+    runs-on: windows-latest
 
     strategy:
       fail-fast: false
@@ -151,7 +151,7 @@ jobs:
     - name: Setup vcpkg
       uses: friendlyanon/setup-vcpkg@v1
       with:
-        committish: 0fd31b9dbb96e1ab86e0c9ee930790990a974bd3
+        committish: 01d6f6ff1e5332b926099f0c23bda996940ad4e8
     
     - name: Install SDL2
       run: vcpkg install sdl2:x64-windows
