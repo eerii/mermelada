@@ -14,8 +14,8 @@ layout(location = 3) in vec3 frag_pos;
 
 layout(location = 0) out vec4 out_color;
 
-int shininess = 8;
-float specular_intensity = 0.5;
+int shininess = 64;
+float specular_intensity = 0.3;
 
 vec3 directional(vec3 light, float intensity, vec3 normal, vec3 view_dir) {
     //: Diffuse

@@ -20,9 +20,13 @@ namespace Fresa::System
     //: Example of a hardcoded render system
     //: This is very basic and not elegant, it will be reworked in the future
     
+    inline DrawDescription draw_cup;
+    inline DrawDescription draw_sphere;
     inline DrawDescription draw_cube;
+    inline DrawDescription draw_torus;
     inline DrawDescription draw_plane;
     inline DrawDescription draw_light;
+    inline DrawDescription draw_instanced;
     
     inline Clock::time_point start_time = time();
     
@@ -56,19 +60,28 @@ namespace Fresa::System
         int point_light_count;
     };
     
-    struct SomeSystem : SystemInit<SomeSystem>, RenderUpdate<SomeSystem> {
+    struct SomeSystem : SystemInit<SomeSystem>, RenderUpdate<SomeSystem, PRIORITY_FIRST> {
         inline static void init() {
-            auto [vertices, indices] = Serialization::loadOBJ("test");
-            draw_cube = getDrawDescription<ObjectBuffer, LightBuffer>(vertices, indices, "draw_light");
-            draw_plane = getDrawDescription<ObjectBuffer, LightBuffer>(vertices, indices, "draw_light");
-            draw_light = getDrawDescription<UniformBufferObject>(vertices, indices, "draw_obj");
+            auto [cow_vertices, cow_indices] = Serialization::loadOBJ("cow");
+            draw_cup = getDrawDescription<ObjectBuffer, LightBuffer>(cow_vertices, cow_indices, "draw_light");
             
-            /*//: Instancing
+            auto [cube_vertices, cube_indices] = Serialization::loadOBJ("test");
+            //draw_cube = getDrawDescription<ObjectBuffer, LightBuffer>(cube_vertices, cube_indices, "draw_light");
+            draw_plane = getDrawDescription<ObjectBuffer, LightBuffer>(cube_vertices, cube_indices, "draw_light");
+            
+            auto [sphere_vertices, sphere_indices] = Serialization::loadOBJ("sphere");
+            draw_sphere = getDrawDescription<ObjectBuffer, LightBuffer>(sphere_vertices, sphere_indices, "draw_light");
+            draw_light = getDrawDescription<UniformBufferObject>(sphere_vertices, sphere_indices, "draw_obj");
+            
+            auto [torus_vertices, torus_indices] = Serialization::loadOBJ("torus");
+            draw_torus = getDrawDescription<ObjectBuffer, LightBuffer>(torus_vertices, torus_indices, "draw_light");
+            
+            //: Instancing
             std::vector<VertexExample> per_instance(1000);
-            draw_i = getDrawDescriptionI<UniformBufferObject>(Vertices::cube_color, per_instance, Indices::cube, "draw_color_i");
+            draw_instanced = getDrawDescriptionI<UniformBufferObject>(Vertices::cube_color, per_instance, Indices::cube, "draw_color_i");
             
             //: Compute test
-            updateBufferFromCompute<VertexExample>(api, instanced_buffer_data.at(draw_i.instance).instance_buffer, 1000, "compute_test", [](){
+            updateBufferFromCompute<VertexExample>(api.instanced_buffer_data.at(draw_instanced.instance).instance_buffer, 1000, "compute_test", [](){
                 std::vector<VertexExample> per_instance(1000);
                 for (auto &i : per_instance) {
                     float r = std::sqrt((float)(rand() % 1000) / 1000.0f) * 120.0f;
@@ -78,7 +91,7 @@ namespace Fresa::System
                     i.something = (float)(rand() % 300) / 100.0f;
                 }
                 return per_instance;
-            });*/
+            });
         }
         
         inline static void render() {
@@ -103,25 +116,40 @@ namespace Fresa::System
             LightBuffer light{};
             
             ObjectBuffer ubo{};
-            ubo.model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -50.0f, 0.0f));
-            ubo.model = glm::scale(ubo.model, glm::vec3(80.0f));
-            ubo.model = glm::rotate(ubo.model, -t * 1.571f, glm::vec3(0.0f, 1.0f, 0.0f));
-            ubo.color = glm::vec3(0.5, 0.5, 1.0);
-            draw(draw_cube, ubo, light);
+            ubo.model = glm::translate(glm::mat4(1.0f), glm::vec3(150.0f, 20.0f, 100.0f));
+            ubo.model = glm::scale(ubo.model, glm::vec3(45.0f));
+            ubo.model = glm::rotate(ubo.model, 2.5f, glm::vec3(0.0f, 1.0f, 0.0f));
+            ubo.color = glm::vec3(0.6, 0.6, 1.0);
+            draw(draw_cup, ubo, light);
             
-            ObjectBuffer ubo2{};
-            ubo2.model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 100.0f, 0.0f));
-            ubo2.model = glm::scale(ubo2.model, glm::vec3(300.0f, 10.0f, 300.0f));
-            ubo2.color = glm::vec3(1.0, 0.5, 0.5);
-            draw(draw_plane, ubo2, light);
+            ubo.model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, std::sin(3.1415f * t) * 30.0f - 80.0f, 0.0f));
+            ubo.model = glm::scale(ubo.model, glm::vec3(80.0f));
+            ubo.color = glm::vec3(0.6, 1.0, 0.8);
+            draw(draw_sphere, ubo, light);
+            
+            ubo.model = glm::translate(glm::mat4(1.0f), glm::vec3(-120.0f, std::sin(-1.571f * t) * 10.0f - 20.0f, -140.0f));
+            ubo.model = glm::scale(ubo.model, glm::vec3(50.0f));
+            ubo.model = glm::rotate(ubo.model, 3.1415f * t, glm::vec3(0.0f, 1.0f, 0.0f));
+            ubo.color = glm::vec3(1.0, 0.9, 0.5);
+            draw(draw_torus, ubo, light);
+            
+            ubo.model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 100.0f, 0.0f));
+            ubo.model = glm::scale(ubo.model, glm::vec3(300.0f, 10.0f, 300.0f));
+            ubo.color = glm::vec3(1.0, 0.5, 0.5);
+            draw(draw_plane, ubo, light);
             
             setGlobalUniform<UniformBufferObject, "view">(camera_transform.view);
             setGlobalUniform<UniformBufferObject, "proj">(camera_transform.proj);
             
             UniformBufferObject ubo3{};
-            ubo3.model = glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 0.5f, -0.3f) * (-300.0f));
+            ubo3.model = glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 0.5f, -0.3f) * (-500.0f));
             ubo3.model = glm::scale(ubo3.model, glm::vec3(10.0f));
             draw(draw_light, ubo3);
+            
+            ubo3.model = glm::translate(glm::mat4(1.0f), glm::vec3(-350.0f, std::sin(1.571f * t + 1.571f) * 50.0f, -450.0f));
+            ubo3.model = glm::scale(ubo3.model, glm::vec3(10.0f * (1.0f + 0.3f * std::sin(1.571f * t))));
+            ubo3.model = glm::rotate(ubo3.model, -1.571f * t, glm::vec3(0.0f, 1.0f, 0.0f));
+            draw(draw_instanced, ubo3);
         }
     };
     
