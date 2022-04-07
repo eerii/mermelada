@@ -7,9 +7,7 @@
 #include "scene.h"
 #include "serialization.h"
 #include "audio.h"
-
 #include "game_config.h"
-#include "system_list.h"
 
 using namespace Fresa;
 
