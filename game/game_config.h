@@ -30,5 +30,6 @@ bool Config::draw_indirect = true;
 bool Config::draw_indirect = false;
 #endif
 ui8 Config::multisampling = 2;
+bool Config::prefer_mailbox_mode = false;
 
 #endif

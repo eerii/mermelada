@@ -2,7 +2,7 @@
 # a - attachment            a name type size
 # s - subpass               s name [attachment list...] [(optional)external attachments...]
 # r - renderpass            r [subpass list...]
-# d/p/sd - shader           p shader subpass vertices (optional only draw)instanced_vertices        d - draw shader, p - post shader, sd - shadow shader
+# d/p - shader              p shader subpass vertices        d - draw shader, p - post shader
 
 ### depth render pass
 
@@ -12,8 +12,8 @@
 
 ### main render pass
 
-a a_color     color_input    win
-a a_depth     depth          win
+a a_color     color_input_msaa    win
+a a_depth     depth_msaa          win
 a a_post      color_external      win
 s s_draw      [a_color a_depth]
 s s_post      [a_color a_post]
@@ -27,13 +27,7 @@ r             [s_window]
 
 ### shaders
 
-d draw_color   s_draw    pos3color
-d draw_color_i s_draw    pos3color   example
-d draw_tex     s_draw    pos3uv
-
-d draw_obj     s_draw    obj
-d draw_light   s_draw    obj
-# sd shadowmap   s_shadow  obj [draw_obj] [draw_light]
+d draw_color_i s_draw    pos3color
 
 p post         s_post    pos2
 p window       s_window  pos2
