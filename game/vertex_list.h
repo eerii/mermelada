@@ -9,15 +9,9 @@
 
 #include "reflection.h"
 
-struct VertexExample {
-    Members(VertexExample, pos, something)
-    glm::vec3 pos;
-    float something;
-};
-
 struct VertexModel {
     Members(VertexModel, model)
     glm::mat4 model;
 };
     
-using CustomVertexType = std::variant<VertexExample, VertexModel>;
+using CustomVertexType = std::variant<VertexModel>;

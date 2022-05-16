@@ -16,7 +16,7 @@
 using namespace Fresa;
 
 const str Config::name = "fresa";
-const ui8 Config::version[3] = {0, 3, 13};
+const ui8 Config::version[3] = {0, 4, 0};
 const Vec2<ui16> Config::window_size = {1024, 720};
 const Vec2<ui16> Config::resolution = {256, 180};
 
@@ -24,11 +24,6 @@ const float Config::timestep = 10.0f;
 float Config::game_speed = 1.0f;
 
 str Config::renderer_description_path = "data/renderer_description";
-#if defined USE_VULKAN
-bool Config::draw_indirect = true;
-#elif defined USE_OPENGL
-bool Config::draw_indirect = false;
-#endif
 ui8 Config::multisampling = 2;
 bool Config::prefer_mailbox_mode = false;
 

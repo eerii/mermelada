@@ -9,7 +9,8 @@ using namespace Graphics;
 using namespace System;
 
 namespace {
-    DrawDescription draw_instanced;
+    MeshID mesh_cube;
+    DrawCommandID indirect_draw;
     
     Clock::time_point start_time = time();
     
@@ -25,6 +26,9 @@ namespace {
     float mouse_sensitivity = 0.003f;
     
     bool paused = false;
+    
+    inline std::vector<glm::vec3> objects(1000);
+    inline std::vector<DrawID> draw_test(1000);
     
     /*struct ObjectBuffer { //: TODO: FIX PADDING IN UNIFORMS
         Members(ObjectBuffer, model, view, proj, camera_pos, _, color)
@@ -46,46 +50,41 @@ namespace {
 
 void SomeSystem::init() {
     //: Instancing
-    std::vector<VertexExample> per_instance(1000);
-    for (auto &i : per_instance) {
+    for (auto &i : objects) {
         float r = std::sqrt((float)(rand() % 1000) / 1000.0f) * 250.0f;
         float theta = (float)(rand() % 314) / 100.0f;
         float phi = (float)(rand() % 628) / 100.0f;
-        i.pos = glm::vec3(std::cos(theta) * std::sin(phi), std::sin(theta) * std::sin(phi), std::cos(phi)) * r;
-        i.something = (float)(rand() % 500) / 500.0f;
+        i = glm::vec3(r, theta, phi);
     }
-    draw_instanced = getDrawDescription<UniformBufferObject>(Vertices::cube_color, per_instance, Indices::cube, "draw_color_i");
     
-    //: Compute test
-    /*updateBufferFromCompute<VertexExample>(api.instanced_buffer_data.at(draw_instanced.instance).instance_buffer, 1000, "compute_test", [](){
-        std::vector<VertexExample> per_instance(1000);
-        for (auto &i : per_instance) {
-            float r = std::sqrt((float)(rand() % 1000) / 1000.0f) * 120.0f;
-            float theta = (float)(rand() % 314) / 100.0f;
-            float phi = (float)(rand() % 628) / 100.0f;
-            i.pos = glm::vec3(std::cos(theta) * std::sin(phi), std::sin(theta) * std::sin(phi), std::cos(phi)) * r;
-            i.something = (float)(rand() % 300) / 100.0f;
-        }
-        return per_instance;
-    });*/
+    mesh_cube = Buffer::registerMesh(Vertices::cube_color, Indices::cube);
+    
+    indirect_draw = Draw::registerDrawCommand(mesh_cube);
+    
+    for (int i = 0; i < 1000; i++)
+        draw_test.at(i) = Draw::registerDrawID(mesh_cube);
 }
 
 void SomeSystem::render() {
     float t = sec(time() - start_time);
     
-    CameraTransform camera_transform = Camera::getTransform(); //: TODO: Improve how this is handled
-    setGlobalUniform<UniformBufferObject, "view">(camera_transform.view);
-    setGlobalUniform<UniformBufferObject, "proj">(camera_transform.proj);
+    CameraTransform camera_transform = Camera::getTransform();
+    Shader::updateGlobalUniform(ShaderID{"draw_color_i"}, "CameraView", camera_transform);
     
-    UniformBufferObject ubo{};
-    ubo.model = glm::translate(glm::mat4(1.0f), glm::vec3(-300.0f, std::sin(1.571f * t + 1.571f) * 50.0f, -450.0f));
-    ubo.model = glm::scale(ubo.model, glm::vec3(10.0f * (1.0f + 0.3f * std::sin(1.571f * t))));
-    ubo.model = glm::rotate(ubo.model, -1.571f * t, glm::vec3(0.0f, 1.0f, 0.0f));
-    draw(draw_instanced, ubo);
+    auto *instance = Draw::getInstanceData(draw_test.at(0), 1000);
+    
+    for (int i = 0; i < draw_test.size(); i++) {
+        float r = objects.at(i).x, theta = objects.at(i).y, phi = objects.at(i).z;
+        glm::vec3 pos = glm::vec3(std::cos(theta) * std::sin(phi), std::sin(theta) * std::sin(phi), std::cos(phi)) * r;
+        instance[i].model = glm::translate(glm::mat4(1.0f), pos + glm::vec3(0.0f, std::pow(std::sin(t + phi), 2) * (r / 10.0f), 0.0f));
+        instance[i].model = glm::scale(instance[i].model, glm::vec3(10.0f));
+    }
+    
+    Draw::draw(ShaderID{"draw_color_i"}, draw_test.at(0));
 }
 
 void CameraSystem::init() {
-    camera = Camera::create(projections.at(proj_i), glm::vec3(-160.f, -225.f, 315.f), 4.55f, 0.24f);
+    camera = Camera::create(projections.at(proj_i), glm::vec3(400.f, -25.f, 670.f), 4.18f, 0.03f);
 }
 
 void CameraSystem::update() {
