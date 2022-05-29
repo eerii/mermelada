@@ -9,9 +9,6 @@ using namespace Graphics;
 using namespace System;
 
 namespace {
-    MeshID mesh_cube;
-    DrawCommandID indirect_draw;
-    
     Clock::time_point start_time = time();
     
     const std::vector<CameraProjection> projections = {
@@ -27,8 +24,10 @@ namespace {
     
     bool paused = false;
     
-    inline std::vector<glm::vec3> objects(1000);
-    inline std::vector<DrawID> draw_test(1000);
+    MeshID mesh_cube;
+    inline std::vector<glm::vec3> objects(2000);
+    DrawID draw_test;
+    DrawID draw_test_2;
     
     /*struct ObjectBuffer { //: TODO: FIX PADDING IN UNIFORMS
         Members(ObjectBuffer, model, view, proj, camera_pos, _, color)
@@ -57,12 +56,10 @@ void SomeSystem::init() {
         i = glm::vec3(r, theta, phi);
     }
     
-    mesh_cube = Buffer::registerMesh(Vertices::cube_color, Indices::cube);
+    mesh_cube = Draw::registerMesh(Vertices::cube_color, Indices::cube);
     
-    indirect_draw = Draw::registerDrawCommand(mesh_cube);
-    
-    for (int i = 0; i < 1000; i++)
-        draw_test.at(i) = Draw::registerDrawID(mesh_cube);
+    draw_test = Draw::registerDrawID(mesh_cube, DrawBatchType(DRAW_INSTANCES | DRAW_DYNAMIC), 1000);
+    draw_test_2 = Draw::registerDrawID(mesh_cube, DrawBatchType(DRAW_SINGLE_OBJECT | DRAW_DYNAMIC), 1);
 }
 
 void SomeSystem::render() {
@@ -71,16 +68,20 @@ void SomeSystem::render() {
     CameraTransform camera_transform = Camera::getTransform();
     Shader::updateGlobalUniform(ShaderID{"draw_color_i"}, "CameraView", camera_transform);
     
-    auto *instance = Draw::getInstanceData(draw_test.at(0), 1000);
-    
-    for (int i = 0; i < draw_test.size(); i++) {
+    auto *instance = Draw::getInstanceData(draw_test);
+    for (int i = 0; i < 1000; i++) {
         float r = objects.at(i).x, theta = objects.at(i).y, phi = objects.at(i).z;
         glm::vec3 pos = glm::vec3(std::cos(theta) * std::sin(phi), std::sin(theta) * std::sin(phi), std::cos(phi)) * r;
         instance[i].model = glm::translate(glm::mat4(1.0f), pos + glm::vec3(0.0f, std::pow(std::sin(t + phi), 2) * (r / 10.0f), 0.0f));
         instance[i].model = glm::scale(instance[i].model, glm::vec3(10.0f));
     }
     
-    Draw::draw(ShaderID{"draw_color_i"}, draw_test.at(0));
+    instance = Draw::getInstanceData(draw_test_2);
+    instance->model = glm::translate(glm::mat4(1.0f), glm::vec3(500.0f, 0.0f, 0.0f));
+    instance->model = glm::scale(instance->model, glm::vec3(100.0f));
+    
+    Draw::draw(ShaderID{"draw_color_i"}, draw_test);
+    Draw::draw(ShaderID{"draw_color_i"}, draw_test_2);
 }
 
 void CameraSystem::init() {
