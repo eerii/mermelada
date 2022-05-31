@@ -3,6 +3,7 @@
 # s - subpass               s name [attachment list...] [(optional)external attachments...]
 # r - renderpass            r [subpass list...]
 # d/p - shader              p shader subpass vertices        d - draw shader, p - post shader
+# c - compute shader        c shader
 
 ### depth render pass
 
@@ -27,7 +28,11 @@ r             [s_window]
 
 ### shaders
 
-d draw_color_i s_draw    pos3color
+d draw_obj     s_draw    obj
 
 p post         s_post    pos2
 p window       s_window  pos2
+
+### compute shaders
+
+c compute_test
