@@ -43,11 +43,16 @@ void SomeSystem::init() {
     material_ids["blue"] = Draw::registerMaterial(glm::vec4(0.2f, 0.3f, 0.8f, 1.0f));
     
     //: Draws
-    draw_ids["cube"] = Draw::registerDrawID(mesh_ids["cube"], material_ids["yellow"], DrawBatchType(DRAW_SINGLE_OBJECT | DRAW_DYNAMIC), 1);
-    draw_ids["torus"] = Draw::registerDrawID(mesh_ids["torus"], material_ids["purple"], DrawBatchType(DRAW_INSTANCES | DRAW_DYNAMIC), 1);
-    draw_ids["sphere"] = Draw::registerDrawID(mesh_ids["sphere"], material_ids["purple"], DrawBatchType(DRAW_INSTANCES | DRAW_DYNAMIC), 1);
-    draw_ids["floor"] = Draw::registerDrawID(mesh_ids["cube"], material_ids["blue"], DrawBatchType(DRAW_SINGLE_OBJECT | DRAW_DYNAMIC), 1);
-    //TODO: Fix draw single object not using multiple meshes
+    draw_ids["cube"] = Draw::registerDrawID(mesh_ids["cube"], material_ids["yellow"], {"draw_obj"}, DRAW_DYNAMIC, 1);
+    draw_ids["small_cubes"] = Draw::registerDrawID(mesh_ids["cube"], material_ids["blue"], {"draw_obj"}, DRAW_DYNAMIC, 5);
+    draw_ids["torus"] = Draw::registerDrawID(mesh_ids["torus"], material_ids["purple"], {"draw_obj"}, DRAW_DYNAMIC, 1);
+    draw_ids["sphere"] = Draw::registerDrawID(mesh_ids["sphere"], material_ids["purple"], {"draw_obj"}, DRAW_DYNAMIC, 1);
+    draw_ids["floor"] = Draw::registerDrawID(mesh_ids["cube"], material_ids["blue"], {"draw_obj"}, DRAW_STATIC, 1);
+    
+    //: Floor static position
+    auto instance = Draw::getInstanceData(draw_ids["floor"]);
+    instance->model = glm::translate(glm::mat4(1.f), glm::vec3(0.f, 200.f, 0.f));
+    instance->model = glm::scale(instance->model, glm::vec3(500.f, 20.f, 500.f));
 }
 
 void SomeSystem::render() {
@@ -63,6 +68,14 @@ void SomeSystem::render() {
     instance->model = glm::scale(instance->model, glm::vec3(100.f));
     instance->model = glm::rotate(instance->model, t, glm::vec3(0.f, 1.f, 0.f));
     
+    //: Small cubes
+    instance = Draw::getInstanceData(draw_ids["small_cubes"]);
+    for (int i = 0; i < 5; i++) {
+        instance[i].model = glm::translate(glm::mat4(1.f), glm::vec3(std::cos(2.f * t - std::pow(0.2f * i, 1.2f) - 0.15f) * 500.f, 50.f, std::sin(2.f * t - std::pow(0.2f * i, 1.2f) - 0.15f) * 500.f));
+        instance[i].model = glm::scale(instance[i].model, glm::vec3(10.f - i));
+        instance[i].model = glm::rotate(instance[i].model, (1.f + 0.5f * i) * t, glm::vec3(i * 1.f, -i * 1.f, 10.f - i));
+    }
+    
     //: Torus
     instance = Draw::getInstanceData(draw_ids["torus"]);
     instance->model = glm::translate(glm::mat4(1.f), glm::vec3(-200.f, 0.f, 0.f));
@@ -73,14 +86,9 @@ void SomeSystem::render() {
     instance->model = glm::translate(glm::mat4(1.f), glm::vec3(std::cos(2.f * t) * 500.f, 50.f, std::sin(2.f * t) * 500.f));
     instance->model = glm::scale(instance->model, glm::vec3(30.f));
     
-    //: Floor
-    instance = Draw::getInstanceData(draw_ids["floor"]);
-    instance->model = glm::translate(glm::mat4(1.f), glm::vec3(0.f, 200.f, 0.f));
-    instance->model = glm::scale(instance->model, glm::vec3(500.f, 20.f, 500.f));
-    
     //: Draw
     for (auto &[name, object] : draw_ids)
-        Draw::draw("draw_obj", object);
+        Draw::draw(object);
 }
 
 void CameraSystem::init() {
