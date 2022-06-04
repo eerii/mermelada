@@ -1,6 +1,4 @@
-//project fresa, 2017-2022
-//by jose pazos perez
-//licensed under GPLv3
+//: fresa by jose pazos perez, licensed under GPLv3
 
 //: Config definitons
 //      You need to initialize all the specific configurations for your project (marked as const in the config file)

@@ -1,6 +1,4 @@
-//project fresa, 2017-2022
-//by jose pazos perez
-//licensed under GPLv3
+//: fresa by jose pazos perez, licensed under GPLv3
 
 //: Optional file to define new vertex definitions for shaders
 //: It is included in "r_types.h"
