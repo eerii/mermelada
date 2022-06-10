@@ -2,6 +2,8 @@
 
 A template repository for [fresa :strawberry:](https://github.com/josekoalas/fresa).
 
+_As you might have read in [fresa](https://github.com/josekoalas/fresa), I am currently working on a new version of the engine. All the development will be taking place in [fresa/dev](https://github.com/josekoalas/fresa/tree/dev) and [aguacate/dev](https://github.com/josekoalas/aguacate/tree/dev) until the new implementation has most of the features ready. Please refer to those branches to see the new changes._
+
 [![build](https://github.com/josekoalas/aguacate/actions/workflows/cmake.yml/badge.svg)](https://github.com/josekoalas/aguacate/actions/workflows/cmake.yml)
 
 ## building :hammer:
