@@ -6,5 +6,6 @@
 using namespace fresa;
 
 int main (int argv, char** args) {
+    log::info("hey!");
     return 0;
 }

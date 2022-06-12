@@ -51,6 +51,16 @@ target_include_directories(fresa PUBLIC ${header_dir_list})
 target_compile_definitions(fresa PUBLIC $<$<CONFIG:DEBUG>:DEBUG>)
 # ------------------------------------------------------------------------------
 
+# LIBRARIES
+# ------------------------------------------------------------------------------
+# fmt
+target_include_directories(fresa PUBLIC ${PROJECT_SOURCE_DIR}/deps/fmt/include)
+target_sources(fresa PUBLIC ${PROJECT_SOURCE_DIR}/deps/fmt/src/format.cc)
+# range-v3 (used while compilers get support of c++20 std::ranges)
+add_subdirectory(deps/ranges)
+target_link_libraries(fresa PUBLIC range-v3::range-v3)
+# ------------------------------------------------------------------------------
+
 # INSTALL
 # ------------------------------------------------------------------------------
 # Install directory
