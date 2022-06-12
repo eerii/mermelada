@@ -2,3 +2,6 @@
 	path = fresa
 	url = https://github.com/josekoalas/fresa.git
 	branch = dev
+[submodule "deps/fmt"]
+	path = deps/fmt
+	url = https://github.com/fmtlib/fmt
