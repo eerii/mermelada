@@ -2,7 +2,9 @@
 
 #include "engine.h"
 
+#include "system.h"
+
 int main (int argv, char** args) {
-    fresa::run();
+    fresa::run(argv, args);
     return 0;
 }
