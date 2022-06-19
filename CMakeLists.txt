@@ -59,6 +59,8 @@ target_sources(fresa PUBLIC ${PROJECT_SOURCE_DIR}/deps/fmt/src/format.cc)
 # range-v3 (used while compilers get support of c++20 std::ranges)
 add_subdirectory(deps/ranges)
 target_link_libraries(fresa PUBLIC range-v3::range-v3)
+# jthread (used while compilers get support of c++20 std::jthread)
+target_include_directories(fresa PUBLIC ${PROJECT_SOURCE_DIR}/deps/jthread/source)
 # ------------------------------------------------------------------------------
 
 # INSTALL

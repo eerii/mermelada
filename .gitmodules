@@ -8,3 +8,6 @@
 [submodule "deps/ranges"]
 	path = deps/ranges
 	url = https://github.com/ericniebler/range-v3
+[submodule "deps/jthread"]
+	path = deps/jthread
+	url = https://github.com/josuttis/jthread
