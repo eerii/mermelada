@@ -1,7 +1,7 @@
 # CONFIGURATION
 # ------------------------------------------------------------------------------
 # CMake version
-cmake_minimum_required(VERSION 3.15...3.23)
+cmake_minimum_required(VERSION 3.15...3.24)
 
 # Project description
 project(fresa VERSION 0.4
@@ -14,9 +14,17 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 # ------------------------------------------------------------------------------
 
+# COMPILER
+# ------------------------------------------------------------------------------
+# Preprocessor definitions (conditional compilation)
+add_compile_definitions(
+  $<$<CONFIG:DEBUG>:ENABLE_TESTS>
+)
+# ------------------------------------------------------------------------------
+
 # INCLUDE
 # ------------------------------------------------------------------------------
-# Header directories ()
+# Header directories
 MACRO(HEADER_DIRECTORIES return_list)
     FILE(GLOB_RECURSE new_list *.h)
     SET(dir_list "")
