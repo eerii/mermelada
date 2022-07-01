@@ -3,6 +3,6 @@
 #include "engine.h"
 
 int main (int argv, char** args) {
-    fresa::run(argv, args);
+    fresa::run();
     return 0;
 }
