@@ -18,7 +18,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # ------------------------------------------------------------------------------
 # Preprocessor definitions (conditional compilation)
 add_compile_definitions(
-  $<$<CONFIG:DEBUG>:ENABLE_TESTS>
+  $<$<CONFIG:DEBUG>:FRESA_ENABLE_TESTS>
+  FRESA_CONFIG_FILE="config.h"
 )
 # ------------------------------------------------------------------------------
 
@@ -42,8 +43,13 @@ list(LENGTH header_dir_list header_dir_list_count)
 message(STATUS "[INFO] Found ${header_dir_list_count} header directories")
 
 # Get the source and header files
-file(GLOB_RECURSE header_list CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/fresa/*.h")
-file(GLOB_RECURSE source_list CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/fresa/*.cpp" "${PROJECT_SOURCE_DIR}/main.cpp")
+file(GLOB_RECURSE header_list CONFIGURE_DEPENDS
+        "${PROJECT_SOURCE_DIR}/fresa/*.h"
+        "${PROJECT_SOURCE_DIR}/game/*.h")
+file(GLOB_RECURSE source_list CONFIGURE_DEPENDS
+        "${PROJECT_SOURCE_DIR}/fresa/*.cpp"
+        "${PROJECT_SOURCE_DIR}/game/*.cpp"
+        "${PROJECT_SOURCE_DIR}/main.cpp")
 list(LENGTH header_list header_list_count)
 list(LENGTH source_list source_list_count)
 message(STATUS "[INFO] Found ${header_list_count} header files (.h) and ${source_list_count} source files (.cpp)")

@@ -1,0 +1,17 @@
+find_library(libclang_path clang HINTS /usr/local/lib/ /usr/local/Cellar/llvm/*/lib/)
+if(libclang_path)
+    message(STATUS "[INFO] Found libclang: ${libclang_path}")
+
+    file(GLOB_RECURSE reflection_sources CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/...")
+    file(GLOB_RECURSE reflection_headers CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/...")
+    add_executable(fresa-reflection ${reflection_sources} ${reflection_headers})
+    target_include_directories(fresa-reflection PUBLIC ${header_dir_list})
+    
+    target_link_libraries(fresa-reflection PUBLIC ${libclang_path})
+
+    get_filename_component(libclang_include ${libclang_path} DIRECTORY)
+    set(libclang_include ${libclang_include}/../include)
+    target_include_directories(fresa-reflection PUBLIC ${libclang_include})
+else()
+    message(STATUS "[INFO] libclang not found, disabling static reflection")
+endif()
