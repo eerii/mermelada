@@ -10,6 +10,9 @@ namespace fresa
     //      compile time, modify default values using overrides of the constexpr virtual functions
     constexpr inline struct _EngineConfig : EngineConfig {
         constexpr str_view name() const override { return "fresa"; }
+        #ifdef FRESA_DEBUG // extended log level only for debug builds
+        constexpr ui32 log_level() const override { return 0b0111111; }
+        #endif
     } engine_config;
 
     //* run config
@@ -18,7 +21,7 @@ namespace fresa
 
     //* debug config
     //      run time, only on debug builds, same structure as run config
-    #ifdef DEBUG
+    #ifdef FRESA_DEBUG
     inline DebugConfig debug_config{};
     #endif
 }

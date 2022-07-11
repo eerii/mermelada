@@ -62,7 +62,7 @@ add_executable(fresa ${source_list} ${header_list})
 target_include_directories(fresa PUBLIC ${header_dir_list})
 
 # Preprocessor macros
-target_compile_definitions(fresa PUBLIC $<$<CONFIG:DEBUG>:DEBUG>)
+target_compile_definitions(fresa PUBLIC $<$<CONFIG:DEBUG>:FRESA_DEBUG>)
 # ------------------------------------------------------------------------------
 
 # LIBRARIES
