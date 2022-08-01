@@ -12,7 +12,7 @@ namespace fresa
         constexpr str_view name() const override { return "fresa"; }
 
         #ifdef FRESA_DEBUG
-        constexpr str_view run_tests() const override { return ""; }
+        constexpr str_view run_tests() const override { return "ecs_scene_view"; }
         constexpr ui32 log_level() const override { return 0b0111111; }
         #endif
     } engine_config;
