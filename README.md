@@ -1,8 +1,6 @@
-# melocotón :peach:
+# mermelada :peach:
 
-A template repository for [fresa :strawberry:](https://github.com/josekoalas/fresa-legacy).
-
-_As you might have read in [fresa](https://github.com/josekoalas/fresa-legacy), I am currently working on a new version of the engine. All the development will be taking place in [fresa/dev](https://github.com/josekoalas/fresa/tree/dev) and [aguacate/dev](https://github.com/josekoalas/aguacate/tree/dev)._
+A template repository for [fresa :strawberry:](https://github.com/eerii/fresa).
 
 ## building :hammer:
 
@@ -16,7 +14,7 @@ Please keep in mind that right now the project is in the **very pre-alpha** stat
 
 The latest version of `clang` or `gcc` is recommended. On MacOS, you only need Xcode Command Line Tools. On Linux, use at least `gcc 11.2` or `clang 12`. If it is not installed, for Ubuntu you can use `apt install build-essential` and check the version with `gcc --version`. On Windows, you can use `mingw64`, which is equivalent to `gcc`, or a tool like Visual Studio.
 
-Check the [ci system](https://github.com/josekoalas/melocoton/actions) to see an example of a complete implementation. I have tested it to work with:
+Check the [ci system](https://github.com/eerii/mermelada/actions) to see an example of a complete implementation. I have tested it to work with:
 
 | os                  | compiler           |
 | ------------------- | ------------------ |
@@ -57,20 +55,20 @@ Building for web requires [emscripten](https://emscripten.org/docs/getting_start
 
 **Other dependencies**
 
-Some dependencies already come with this sample repository as submodules (imGUI, SPIR-V Cross, glm, stb and VulkanMemoryAllocator). You can find them in the [deps](https://github.com/josekoalas/melocoton/tree/main/deps) folder.
+Some dependencies already come with this sample repository as submodules (imGUI, SPIR-V Cross, glm, stb and VulkanMemoryAllocator). You can find them in the [deps](https://github.com/eerii/mermelada-legacy/tree/main/deps) folder.
 
 ### build
 
 1. Clone the repository
 
 ```
-git clone --recurse-submodules https://github.com/josekoalas/melocoton
+git clone --recurse-submodules https://github.com/eerii/mermelada
 ```
 
 2. Go to the folder
 
 ```
-cd melocoton
+cd mermelada
 ```
 
 3. Build using CMake (replace TARGET as indicated below)

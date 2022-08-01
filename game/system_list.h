@@ -51,7 +51,7 @@ namespace Fresa::System
             draw_i = getDrawDescriptionI<UniformBufferObject>(Vertices::cube_color, per_instance, Indices::cube, "draw_color_i");
             
             //: Compute test
-            API::updateBufferFromCompute<VertexExample>(api, API::instanced_buffer_data.at(draw_i.instance).instance_buffer, 1000, "compute_test", [](){
+            /*API::updateBufferFromCompute<VertexExample>(api, API::instanced_buffer_data.at(draw_i.instance).instance_buffer, 1000, "compute_test", [](){
                 std::vector<VertexExample> per_instance(1000);
                 for (auto &i : per_instance) {
                     float r = std::sqrt((float)(rand() % 1000) / 1000.0f) * 120.0f;
@@ -61,7 +61,7 @@ namespace Fresa::System
                     i.something = (float)(rand() % 300) / 100.0f;
                 }
                 return per_instance;
-            });
+            });*/
         }
         
         inline static void render() {

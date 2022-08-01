@@ -1,6 +1,3 @@
-[submodule "fresa"]
-	path = fresa
-	url = https://github.com/josekoalas/fresa-legacy.git
 [submodule "deps/glm"]
 	path = deps/glm
 	url = https://github.com/g-truc/glm.git
@@ -15,3 +12,7 @@
 	path = deps/imgui
 	url = https://github.com/ocornut/imgui
 	branch = docking
+[submodule "fresa"]
+	path = fresa
+	url = https://github.com/eerii/fresa.git
+	branch = legacy
