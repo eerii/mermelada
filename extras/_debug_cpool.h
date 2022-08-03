@@ -5,7 +5,7 @@
 
 using namespace fresa;
 
-void debug_cpool(const ecs::Scene& scene, int n = 10) {
+void debug_cpool(ecs::Scene& scene, int n = 10) {
     std::cout << "[SPARSE]: ";
     for (auto &[page, sparse] : scene.cpool<int>().sparse)
         for (auto &i : sparse | rv::take(n))
