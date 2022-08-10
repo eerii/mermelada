@@ -24,6 +24,11 @@ struct SomeSystem {
         log::info("the first entity with component a has an x value of {}", ecs::View<ComponentA>(scene)().front().second.x);
     }
 
+    static void update() {
+        for (auto [e, a] : ecs::View<ComponentA>(scene)()) { a.x++; }
+        log::info("x: {}", ecs::View<ComponentA>(scene)().front().second.x);
+    }
+
     static void stop() {}
 };
 
