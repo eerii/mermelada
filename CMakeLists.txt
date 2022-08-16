@@ -45,7 +45,8 @@ message(STATUS "[INFO] Found ${header_dir_list_count} header directories")
 # Get the source and header files
 file(GLOB_RECURSE header_list CONFIGURE_DEPENDS
         "${PROJECT_SOURCE_DIR}/fresa/*.h"
-        "${PROJECT_SOURCE_DIR}/game/*.h")
+        "${PROJECT_SOURCE_DIR}/game/*.h"
+        "${PROJECT_SOURCE_DIR}/reflection/*.h")
 file(GLOB_RECURSE source_list CONFIGURE_DEPENDS
         "${PROJECT_SOURCE_DIR}/fresa/*.cpp"
         "${PROJECT_SOURCE_DIR}/game/*.cpp"

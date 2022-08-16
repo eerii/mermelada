@@ -14,6 +14,7 @@ namespace fresa
         //: override some values only on debug builds
         #ifdef FRESA_DEBUG
         constexpr str_view run_tests() const override { return ""; }
+        constexpr bool enable_assertions() const override { return true; }
         constexpr ui32 log_level() const override { return 0b0011111; }
         #endif
     } engine_config;
