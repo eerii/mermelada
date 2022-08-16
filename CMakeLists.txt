@@ -45,8 +45,7 @@ message(STATUS "[INFO] Found ${header_dir_list_count} header directories")
 # Get the source and header files
 file(GLOB_RECURSE header_list CONFIGURE_DEPENDS
         "${PROJECT_SOURCE_DIR}/fresa/*.h"
-        "${PROJECT_SOURCE_DIR}/game/*.h"
-        "${PROJECT_SOURCE_DIR}/reflection/*.h")
+        "${PROJECT_SOURCE_DIR}/game/*.h")
 file(GLOB_RECURSE source_list CONFIGURE_DEPENDS
         "${PROJECT_SOURCE_DIR}/fresa/*.cpp"
         "${PROJECT_SOURCE_DIR}/game/*.cpp"
@@ -64,6 +63,38 @@ target_include_directories(fresa PUBLIC ${header_dir_list})
 
 # Preprocessor macros
 target_compile_definitions(fresa PUBLIC $<$<CONFIG:DEBUG>:FRESA_DEBUG>)
+# ------------------------------------------------------------------------------
+
+# REFLECTION
+# ------------------------------------------------------------------------------
+# Execute reflection commands
+find_package(Python3 COMPONENTS Interpreter REQUIRED)
+
+MACRO(REFLECT_HEADERS)
+    FOREACH(header ${header_list})
+        GET_FILENAME_COMPONENT(header_name ${header} NAME)
+        file(READ ${header} file_contents)
+        string(FIND "${file_contents}" "#include \"reflection_${header_name}\"" has_reflection)
+        if (NOT ${has_reflection} EQUAL -1)
+            message(STATUS "[INFO] Reflecting ${header_name}")
+            add_custom_command(
+                OUTPUT ${PROJECT_SOURCE_DIR}/reflection/reflection_${header_name}
+                COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/fresa/tools/reflection_names.py ${header}
+                WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+                DEPENDS ${header}
+            )
+            add_custom_target(
+                ${header_name}
+                DEPENDS ${PROJECT_SOURCE_DIR}/reflection/reflection_${header_name}
+            )
+            add_dependencies(fresa ${header_name})
+        endif()
+    ENDFOREACH()
+ENDMACRO()
+REFLECT_HEADERS()
+
+# Merge reflection headers into header list
+target_include_directories(fresa PUBLIC "${PROJECT_SOURCE_DIR}/reflection")
 # ------------------------------------------------------------------------------
 
 # LIBRARIES

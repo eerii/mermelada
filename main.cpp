@@ -5,6 +5,7 @@
 #include "log.h"
 #include "reflection.h"
 #include "type_name.h"
+
 using namespace fresa;
 
 struct Test {
@@ -14,6 +15,11 @@ struct Test {
     //int* p = nullptr;
     //int aaa[4];
 };
+
+namespace fresa
+{
+    template <> constexpr auto field_names<Test>() { return std::array<str_view, 5>{"a", "b", "c", "d", "e"}; }
+}
 
 int main (int argv, char** args) {
     log::info("fields: {}", field_count_v<Test>);
@@ -35,7 +41,8 @@ int main (int argv, char** args) {
 
     log::info("{}", Test{} == Test{});
 
-    log::info("{}", field_names<Something>());
+    auto b = get<"d">(t);
+    log::info("{}", b);
     
     fresa::run();
     return 0;
