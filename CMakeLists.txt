@@ -4,9 +4,9 @@
 cmake_minimum_required(VERSION 3.15...3.24)
 
 # Project description
-project(fresa VERSION 0.4
+project(fresa VERSION 0.5
               DESCRIPTION "a tiny game engine"
-              LANGUAGES CXX)
+              LANGUAGES CXX C)
 
 # C++20 support
 set(CMAKE_CXX_STANDARD 20 CACHE STRING "C++ standard")
@@ -27,7 +27,7 @@ add_compile_definitions(
 # ------------------------------------------------------------------------------
 # Header directories
 MACRO(HEADER_DIRECTORIES return_list)
-    FILE(GLOB_RECURSE new_list *.h)
+    FILE(GLOB_RECURSE new_list "${PROJECT_SOURCE_DIR}/fresa/*.h" "${PROJECT_SOURCE_DIR}/game/*.h")
     SET(dir_list "")
     FOREACH(file_path ${new_list})
         GET_FILENAME_COMPONENT(dir_path ${file_path} PATH)
@@ -113,6 +113,17 @@ add_subdirectory(deps/ranges)
 target_link_libraries(fresa PUBLIC range-v3::range-v3)
 # jthread (used while compilers get support of c++20 std::jthread)
 target_include_directories(fresa PUBLIC ${PROJECT_SOURCE_DIR}/deps/jthread/source)
+# glfw
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+add_subdirectory(deps/glfw)
+target_link_libraries(fresa PUBLIC glfw)
+# glad
+set(GLAD_SOURCES_DIR "${PROJECT_SOURCE_DIR}/deps/glad/")
+add_subdirectory("${GLAD_SOURCES_DIR}/cmake" glad_cmake)
+glad_add_library(glad_gl_core_33 REPRODUCIBLE API gl:core=3.3)
+target_link_libraries(fresa PUBLIC glad_gl_core_33)
 # ------------------------------------------------------------------------------
 
 # INSTALL
@@ -125,7 +136,7 @@ install(TARGETS fresa DESTINATION ${INSTALL_DIR})
 
 # Create package
 set(PACKAGE_NAME "fresa")
-set(PACKAGE_VERSION "0.4")
+set(PACKAGE_VERSION "0.5")
 set(PACKAGE_DESCRIPTION "a tiny game engine")
 
 set(CPACK_MONOLITHIC_INSTALL 1)
