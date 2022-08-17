@@ -3,7 +3,7 @@
 #pragma once
 
 #include "system.h"
-#include "log.h"
+#include "some_component.h"
 
 namespace fresa
 {
@@ -12,6 +12,15 @@ namespace fresa
 
         static void init() {
             log::debug("initializing system");
+
+            //* example on how to add components
+            ecs::Scene scene;
+            auto entity = scene.add(SomeComponent{1, 3.14f, {"hey", "there"}});
+
+            //* iterate over all entities with some component
+            for (auto [entity, component] : ecs::View<SomeComponent>(scene)()) {
+                log::info("entity {} has the component {}", entity, component);
+            }
         }
 
         static void update() {
