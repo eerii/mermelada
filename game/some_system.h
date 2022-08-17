@@ -19,7 +19,7 @@ namespace fresa
 
             //* iterate over all entities with some component
             for (auto [entity, component] : ecs::View<SomeComponent>(scene)()) {
-                log::info("entity {} has the component {}", entity, component);
+                log::debug("entity {} has the component {}", entity, component);
             }
         }
 
