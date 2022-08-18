@@ -1,7 +1,7 @@
 # CONFIGURATION
 # ------------------------------------------------------------------------------
 # CMake version
-cmake_minimum_required(VERSION 3.15...3.24)
+cmake_minimum_required(VERSION 3.16...3.24)
 
 # Project description
 project(fresa VERSION 0.5
@@ -12,6 +12,13 @@ project(fresa VERSION 0.5
 set(CMAKE_CXX_STANDARD 20 CACHE STRING "C++ standard")
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+
+# Output bin directory
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin")
+
+# Use static over shared libraries
+option(BUILD_SHARED_LIBS "Build using shared libraries" OFF)
 # ------------------------------------------------------------------------------
 
 # COMPILER

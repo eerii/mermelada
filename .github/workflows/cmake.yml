@@ -1,0 +1,76 @@
+name: CMake
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [macos-12, ubuntu-22.04, windows-2022]
+        compiler: [clang, gcc, msvc]
+        build_type: [Release, Debug]
+        include:
+          - os: macos-12
+            compiler: clang
+            c: /usr/local/opt/llvm/bin/clang
+            cxx: /usr/local/opt/llvm/bin/clang++
+          - os: ubuntu-22.04
+            compiler: clang
+            c: clang-14
+            cxx: clang++-14
+          - os: ubuntu-22.04
+            compiler: gcc
+            c: gcc-12
+            cxx: g++-12
+          - os: windows-2022
+            compiler: msvc
+            c: msvc-14.0
+            cxx: msvc-14.0
+          - os: windows-2022
+            compiler: clang
+            c: clang-14
+            cxx: clang++-14
+          - os: windows-2022
+            compiler: gcc
+            c: gcc-12
+            cxx: g++-12
+  
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - name: Clone repository
+      uses: actions/checkout@v2
+      with:
+        submodules: recursive
+
+    - name: Setup Vulkan SDK
+      uses: humbletim/setup-vulkan-sdk@v1.2.0
+      with:
+        vulkan-query-version: 1.3.216.0
+        vulkan-components: Vulkan-Headers, Vulkan-Loader
+        vulkan-use-cache: true
+
+    - name: Terminal commands
+      run: |
+           pip install jinja2
+      id: terminal
+
+    - name: Configure CMake
+      env:
+        CC: ${{ matrix.c }}
+        CXX: ${{ matrix.cxx }}
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+
+    - name: Build
+      run: cmake --build ${{github.workspace}}/build --config ${{ matrix.build_type }}
+      
+    - name: Store Binary
+      uses: actions/upload-artifact@v3.1.0
+      with:
+        name: ${{ matrix.os }} - ${{ matrix.build_type }} - ${{ matrix.compiler }}
+        path: bin/*
+      
