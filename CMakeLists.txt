@@ -55,9 +55,9 @@ list(LENGTH source_list source_list_count)
 message(STATUS "[INFO] Found ${header_list_count} header files (.h) and ${source_list_count} source files (.cpp)")
 # ------------------------------------------------------------------------------
 
-# TARGET
+# TARGETS
 # ------------------------------------------------------------------------------
-# Add target
+# Add targets
 add_executable(fresa ${source_list} ${header_list})
 target_include_directories(fresa PUBLIC ${header_dir_list})
 
@@ -122,8 +122,8 @@ target_link_libraries(fresa PUBLIC glfw)
 # glad
 set(GLAD_SOURCES_DIR "${PROJECT_SOURCE_DIR}/deps/glad/")
 add_subdirectory("${GLAD_SOURCES_DIR}/cmake" glad_cmake)
-glad_add_library(glad_gl_core_33 REPRODUCIBLE API gl:core=3.3)
-target_link_libraries(fresa PUBLIC glad_gl_core_33)
+glad_add_library(glad_vulkan LOADER LANGUAGE CXX API vulkan:core=1.1)
+target_link_libraries(fresa PUBLIC glad_vulkan)
 # ------------------------------------------------------------------------------
 
 # INSTALL
