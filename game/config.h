@@ -21,7 +21,9 @@ namespace fresa
 
     //* run config
     //      run time, modify default values using the constructor
-    inline RunConfig config{};
+    inline RunConfig config{
+        .window_size = {800, 600}
+    };
 
     //* debug config
     //      run time, only on debug builds, same structure as run config
