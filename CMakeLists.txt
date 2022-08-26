@@ -131,6 +131,8 @@ set(GLAD_SOURCES_DIR "${PROJECT_SOURCE_DIR}/deps/glad/")
 add_subdirectory("${GLAD_SOURCES_DIR}/cmake" glad_cmake)
 glad_add_library(glad_vulkan LOADER LANGUAGE CXX API vulkan:core=1.1)
 target_link_libraries(fresa PUBLIC glad_vulkan)
+# vma
+target_include_directories(fresa SYSTEM PUBLIC "${PROJECT_SOURCE_DIR}/deps/vma/include")
 # ------------------------------------------------------------------------------
 
 # INSTALL
