@@ -125,7 +125,7 @@ set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 add_subdirectory(deps/glfw)
-target_link_libraries(fresa PUBLIC glfw)
+target_link_libraries(fresa PRIVATE glfw)
 # glad
 set(GLAD_SOURCES_DIR "${PROJECT_SOURCE_DIR}/deps/glad/")
 add_subdirectory("${GLAD_SOURCES_DIR}/cmake" glad_cmake)

@@ -7,39 +7,16 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
+  macos:
     strategy:
       matrix:
-        os: [macos-12, ubuntu-22.04, windows-2022]
-        compiler: [clang, gcc, msvc]
         build_type: [Release, Debug]
-        include:
-          - os: macos-12
-            compiler: clang
-            c: /usr/local/opt/llvm/bin/clang
-            cxx: /usr/local/opt/llvm/bin/clang++
-          - os: ubuntu-22.04
-            compiler: clang
-            c: clang-14
-            cxx: clang++-14
-          - os: ubuntu-22.04
-            compiler: gcc
-            c: gcc-12
-            cxx: g++-12
-          - os: windows-2022
-            compiler: msvc
-            c: msvc-14.0
-            cxx: msvc-14.0
-          - os: windows-2022
-            compiler: clang
-            c: clang-14
-            cxx: clang++-14
-          - os: windows-2022
-            compiler: gcc
-            c: gcc-12
-            cxx: g++-12
-  
-    runs-on: ${{ matrix.os }}
+        compiler:
+          - {name: "gcc", cxx: "/usr/local/opt/gcc/bin/g++-12", c: "clang"}
+          - {name: "clang", cxx: "/usr/local/opt/llvm/bin/clang++", c: "/usr/local/opt/llvm/bin/clang"}
+          - {name: "appleclang", cxx: "clang++", c: "clang"}
+
+    runs-on: macos-12
 
     steps:
     - name: Clone repository
@@ -61,8 +38,8 @@ jobs:
 
     - name: Configure CMake
       env:
-        CC: ${{ matrix.c }}
-        CXX: ${{ matrix.cxx }}
+        CC: ${{ matrix.compiler.c }}
+        CXX: ${{ matrix.compiler.cxx }}
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
 
     - name: Build
@@ -71,6 +48,5 @@ jobs:
     - name: Store Binary
       uses: actions/upload-artifact@v3.1.0
       with:
-        name: ${{ matrix.os }} - ${{ matrix.build_type }} - ${{ matrix.compiler }}
+        name: macos - ${{ matrix.compiler.name }} (${{ matrix.build_type }})
         path: bin/*
-      
