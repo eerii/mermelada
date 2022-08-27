@@ -1,0 +1,61 @@
+name: windows-test
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  windows:
+    strategy:
+      matrix:
+        # build_type: [Release, Debug]
+        compiler:
+          - {name: "gcc", cxx: "g++", c: "gcc"}
+          - {name: "clang", cxx: "clang++", c: "clang"}
+
+    runs-on: windows-2022
+
+    steps:
+    - name: Clone repository
+      uses: actions/checkout@v2
+      with:
+        submodules: recursive
+
+    - name: Setup MSYS2
+      uses: msys2/setup-msys2@v2
+      with:
+        update: true
+        install: >-
+                 mingw-w64-x86_64-gcc
+                 mingw-w64-clang-x86_64-clang
+                 mingw-w64-x86_64-ninja
+                 mingw-w64-x86_64-cmake
+
+    - name: Setup Vulkan SDK
+      uses: humbletim/setup-vulkan-sdk@v1.2.0
+      with:
+        vulkan-query-version: 1.3.216.0
+        vulkan-components: Vulkan-Headers, Vulkan-Loader
+        vulkan-use-cache: true
+
+    - name: Requirements for GLAD
+      run: pip install jinja2
+
+    - name: Configure CMake
+      shell: msys2 {0}
+      env:
+        CC: ${{ matrix.compiler.c }}
+        CXX: ${{ matrix.compiler.cxx }}
+      run: cmake -B "${{ github.workspace }}\build" -G "Ninja" -DCMAKE_BUILD_TYPE=Debug #${{ matrix.build_type }}
+
+    - name: Build
+      shell: msys2 {0}
+      run: cmake --build "${{ github.workspace }}\build" --config Debug #${{ matrix.build_type }}
+      
+    - name: Store Binary
+      uses: actions/upload-artifact@v3.1.0
+      with:
+        name: ubuntu - ${{ matrix.compiler.name }} (${{ matrix.build_type }})
+        path: bin/*
