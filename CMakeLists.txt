@@ -135,6 +135,38 @@ target_link_libraries(fresa PUBLIC glad_vulkan)
 target_include_directories(fresa SYSTEM PUBLIC "${PROJECT_SOURCE_DIR}/deps/vma/include")
 # ------------------------------------------------------------------------------
 
+# RESOURCES
+# ------------------------------------------------------------------------------
+# Resource directory
+set(RESOURCE_FOLDER_NAME "res")
+set(RESOURCE_DIR "${PROJECT_SOURCE_DIR}/${RESOURCE_FOLDER_NAME}")
+message(STATUS "[INFO] Source resource directory: ${RESOURCE_DIR}")
+
+# Compile shaders
+file(GLOB_RECURSE shader_list CONFIGURE_DEPENDS "${RESOURCE_DIR}/shaders/*.frag" "${RESOURCE_DIR}/shaders/*.vert" "${RESOURCE_DIR}/shaders/*.comp")
+list(LENGTH shader_list shader_list_count)
+message(STATUS "[INFO] Found ${shader_list_count} shaders to compile.")
+
+find_program(GLSLC glslc)
+if(NOT GLSLC)
+    message(STATUS "[WARNING] GLSLC not found, not compiling shaders.")
+else()
+    foreach(shader IN LISTS shader_list)
+        add_custom_command(
+            OUTPUT ${shader}.spv
+            COMMAND ${GLSLC} ${shader} -o ${shader}.spv
+            DEPENDS ${shader})
+        list(APPEND spv_shaders ${shader}.spv)
+    endForeach()
+    add_custom_target(shaders ALL DEPENDS ${spv_shaders})
+    add_dependencies(fresa shaders)
+endif()
+
+# Add resources to output folder
+add_custom_target(resources ALL COMMAND ${CMAKE_COMMAND} -E copy_directory ${RESOURCE_DIR} $<TARGET_FILE_DIR:fresa>/${RESOURCE_FOLDER_NAME})
+add_dependencies(fresa resources)
+# ------------------------------------------------------------------------------
+
 # INSTALL
 # ------------------------------------------------------------------------------
 # Install directory
