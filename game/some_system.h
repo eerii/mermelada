@@ -11,8 +11,6 @@ namespace fresa
         inline static System<SomeSystem> system;
 
         static void init() {
-            log::debug("initializing system");
-
             //* example on how to add components
             ecs::Scene scene;
             auto entity = scene.add(SomeComponent{1, 3.14f, {"hey", "there"}});
@@ -24,11 +22,11 @@ namespace fresa
         }
 
         static void update() {
-            log::debug("updating system");
+            //: do something
         }
 
         static void stop() {
-            log::debug("stopping system");
+            //: cleanup
         }
     };
 }
