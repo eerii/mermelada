@@ -55,8 +55,8 @@ file(GLOB_RECURSE header_list CONFIGURE_DEPENDS
         "${PROJECT_SOURCE_DIR}/game/*.h")
 file(GLOB_RECURSE source_list CONFIGURE_DEPENDS
         "${PROJECT_SOURCE_DIR}/fresa/*.cpp"
-        "${PROJECT_SOURCE_DIR}/game/*.cpp"
-        "${PROJECT_SOURCE_DIR}/main.cpp")
+        "${PROJECT_SOURCE_DIR}/game/*.cpp")
+
 list(LENGTH header_list header_list_count)
 list(LENGTH source_list source_list_count)
 message(STATUS "[INFO] Found ${header_list_count} header files (.h) and ${source_list_count} source files (.cpp)")
@@ -65,7 +65,7 @@ message(STATUS "[INFO] Found ${header_list_count} header files (.h) and ${source
 # TARGETS
 # ------------------------------------------------------------------------------
 # Add targets
-add_executable(fresa ${source_list} ${header_list})
+add_executable(fresa "${PROJECT_SOURCE_DIR}/main.cpp" ${source_list} ${header_list})
 target_include_directories(fresa PUBLIC ${header_dir_list})
 
 # Preprocessor macros
@@ -113,26 +113,30 @@ target_include_directories(fresa PUBLIC "${PROJECT_SOURCE_DIR}/generated/reflect
 # LIBRARIES
 # ------------------------------------------------------------------------------
 # fmt
-target_include_directories(fresa PUBLIC ${PROJECT_SOURCE_DIR}/deps/fmt/include)
-target_sources(fresa PUBLIC ${PROJECT_SOURCE_DIR}/deps/fmt/src/format.cc)
+target_include_directories(fresa PUBLIC "${PROJECT_SOURCE_DIR}/deps/fmt/include")
+target_sources(fresa PUBLIC "${PROJECT_SOURCE_DIR}/deps/fmt/src/format.cc")
 # range-v3 (used while compilers get support of c++20 std::ranges)
 add_subdirectory(deps/ranges)
 target_link_libraries(fresa PUBLIC range-v3::range-v3)
 # jthread (used while compilers get support of c++20 std::jthread)
-target_include_directories(fresa PUBLIC ${PROJECT_SOURCE_DIR}/deps/jthread/source)
+target_include_directories(fresa PUBLIC "${PROJECT_SOURCE_DIR}/deps/jthread/source")
 # glfw
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 add_subdirectory(deps/glfw)
-target_link_libraries(fresa PRIVATE glfw)
+target_link_libraries(fresa PUBLIC glfw)
 # glad
-set(GLAD_SOURCES_DIR "${PROJECT_SOURCE_DIR}/deps/glad/")
+set(GLAD_SOURCES_DIR "${PROJECT_SOURCE_DIR}/deps/glad")
 add_subdirectory("${GLAD_SOURCES_DIR}/cmake" glad_cmake)
 glad_add_library(glad_vulkan LOADER LANGUAGE CXX API vulkan:core=1.1)
 target_link_libraries(fresa PUBLIC glad_vulkan)
 # vma
 target_include_directories(fresa SYSTEM PUBLIC "${PROJECT_SOURCE_DIR}/deps/vma/include")
+# spirv-cross
+add_subdirectory(deps/spirv)
+target_link_libraries(fresa PUBLIC spirv-cross-glsl spirv-cross-cpp spirv-cross-reflect spirv-cross-core)
+
 # ------------------------------------------------------------------------------
 
 # RESOURCES

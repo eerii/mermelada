@@ -21,3 +21,6 @@
 [submodule "deps/vma"]
 	path = deps/vma
 	url = https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator
+[submodule "deps/spirv"]
+	path = deps/spirv
+	url = https://github.com/KhronosGroup/SPIRV-Cross.git
