@@ -63,7 +63,6 @@ jobs:
         build_type: [Release, Debug]
         compiler:
           - {name: "gcc", cxx: "/usr/local/opt/gcc/bin/g++-12", c: "clang"}
-          - {name: "clang", cxx: "/usr/local/opt/llvm/bin/clang++", c: "/usr/local/opt/llvm/bin/clang"}
           - {name: "appleclang", cxx: "clang++", c: "clang"}
 
     runs-on: macos-12
