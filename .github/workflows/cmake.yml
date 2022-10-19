@@ -62,7 +62,7 @@ jobs:
       matrix:
         build_type: [Release, Debug]
         compiler:
-          - {name: "gcc", cxx: "/usr/local/opt/gcc/bin/g++-12", c: "clang"}
+          - {name: "gcc", cxx: "/usr/local/opt/gcc/bin/g++-12 -O2", c: "clang"}
           - {name: "appleclang", cxx: "clang++", c: "clang"}
 
     runs-on: macos-12
