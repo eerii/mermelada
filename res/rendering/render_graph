@@ -1,0 +1,23 @@
+# render graph description
+
+# attachment description
+# a name:
+#     type: color | depth
+#     format: rgba8
+#     size: 100, 100 // windown // swapchain
+#     samples: 1
+
+# pass description
+# p name:
+#     shader: shader
+#     in: a1, a2
+#     out: a3
+
+a color_a:
+    type: color | depth
+    format: rgba8
+    size: 100, 100
+
+p test_p:
+    shader: test
+    out: color_a
