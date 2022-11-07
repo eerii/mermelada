@@ -4,6 +4,6 @@
 #include "some_system.h"
 
 int main (int argv, char** args) {
-    fresa::run();
+    //fresa::run();
     return 0;
 }
