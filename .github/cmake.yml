@@ -11,9 +11,6 @@ jobs:
     strategy:
       matrix:
         build_type: [Release, Debug]
-        compiler:
-          - {name: "gcc", cxx: "g++-12", c: "gcc-12"}
-          - {name: "clang", cxx: "clang++-14", c: "clang-14"}
 
     runs-on: ubuntu-22.04
 
@@ -38,14 +35,10 @@ jobs:
            sudo apt update
            sudo apt install xorg-dev -y
 
-    - name: Install GCC 12
-      if: ${{ matrix.compiler.name }} == "gcc"
-      run: sudo apt install g++-12 gcc-12 -y
-
     - name: Configure CMake
       env:
-        CC: ${{ matrix.compiler.c }}
-        CXX: ${{ matrix.compiler.cxx }}
+        CC: clang-14
+        CXX: clang++-14
       run: cmake -B ${{ github.workspace }}/build -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
 
     - name: Build
@@ -54,16 +47,13 @@ jobs:
     - name: Store Binary
       uses: actions/upload-artifact@v3.1.0
       with:
-        name: ubuntu - ${{ matrix.compiler.name }} (${{ matrix.build_type }})
+        name: ubuntu - ${{ matrix.build_type }}
         path: bin/*
 
   macos:
     strategy:
       matrix:
         build_type: [Release, Debug]
-        compiler:
-          - {name: "gcc", cxx: "/usr/local/opt/gcc/bin/g++-12 -O2", c: "clang"}
-          - {name: "appleclang", cxx: "clang++", c: "clang"}
 
     runs-on: macos-12
 
@@ -83,10 +73,16 @@ jobs:
     - name: Requirements for GLAD
       run: pip install jinja2
 
+    - name: Install Clang/LLVM 15
+      run: |
+        brew install llvm@15
+        export LLVM_PATH=$(brew --prefix llvm@15)
+        echo "LLVM_PATH = ${LLVM_PATH}"
+
     - name: Configure CMake
       env:
-        CC: ${{ matrix.compiler.c }}
-        CXX: ${{ matrix.compiler.cxx }}
+        CC: "${LLVM_PATH}/bin/clang"
+        CXX: "${LLVM_PATH}/bin/clang++"
       run: cmake -B ${{ github.workspace }}/build -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
 
     - name: Build
@@ -95,5 +91,5 @@ jobs:
     - name: Store Binary
       uses: actions/upload-artifact@v3.1.0
       with:
-        name: macos - ${{ matrix.compiler.name }} (${{ matrix.build_type }})
+        name: macos - ${{ matrix.build_type }}
         path: bin/*

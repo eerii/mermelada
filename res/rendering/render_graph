@@ -14,7 +14,7 @@
 #     out: a3
 
 a color_a:
-    type: color | depth
+    type: color | depth
     format: rgba8
     size: 100, 100
 

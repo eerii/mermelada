@@ -58,8 +58,8 @@ file(GLOB_RECURSE source_list CONFIGURE_DEPENDS
         "${PROJECT_SOURCE_DIR}/game/*.cpp")
 
 # Filter reflection files
-list(FILTER header_list EXCLUDE REGEX "fresa/reflection")
-list(FILTER source_list EXCLUDE REGEX "fresa/reflection")
+list(FILTER header_list EXCLUDE REGEX "fresa/reflection/plugin")
+list(FILTER source_list EXCLUDE REGEX "fresa/reflection/plugin")
 
 list(LENGTH header_list header_list_count)
 list(LENGTH source_list source_list_count)
@@ -74,49 +74,6 @@ target_include_directories(fresa PUBLIC ${header_dir_list})
 
 # Preprocessor macros
 target_compile_definitions(fresa PUBLIC $<$<CONFIG:DEBUG>:FRESA_DEBUG>)
-# ------------------------------------------------------------------------------
-
-# REFLECTION
-# ------------------------------------------------------------------------------
-# Find python
-find_package(Python3 COMPONENTS Interpreter REQUIRED)
-
-# Reflect the project using the reflection_gen.py script
-MACRO(REFLECT_HEADERS)
-    FOREACH(header ${header_list})
-        GET_FILENAME_COMPONENT(header_name ${header} NAME)
-        file(READ ${header} file_contents)
-        string(FIND "${file_contents}" "#include \"reflection_${header_name}\"" has_reflection)
-        if(NOT ${has_reflection} EQUAL -1)
-            message(STATUS "[INFO] Reflecting ${header_name}")
-            add_custom_command(
-                OUTPUT ${PROJECT_SOURCE_DIR}/generated/reflection/reflection_${header_name}
-                COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/fresa/reflection/reflection_gen.py ${header}
-                WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-                DEPENDS ${header}
-            )
-            add_custom_target(
-                ${header_name}
-                DEPENDS ${PROJECT_SOURCE_DIR}/generated/reflection/reflection_${header_name}
-            )
-            add_dependencies(fresa ${header_name})
-        endif()
-    ENDFOREACH()
-ENDMACRO()
-
-if(${Python3_FOUND})
-    REFLECT_HEADERS()
-else()
-    message(STATUS "[INFO] Python3 not found, reflection targets will not be generated")
-endif()
-
-# Merge reflection headers into header list
-target_include_directories(fresa PUBLIC "${PROJECT_SOURCE_DIR}/generated/reflection")
-
-# Next gen reflection
-# add_subdirectory(fresa/reflection)
-# add_dependencies(fresa reflection)
-# target_compile_options(fresa PUBLIC -fplugin=${CMAKE_BINARY_DIR}/fresa/reflection/libreflection.so)
 # ------------------------------------------------------------------------------
 
 # LIBRARIES
@@ -146,6 +103,22 @@ target_include_directories(fresa SYSTEM PUBLIC "${PROJECT_SOURCE_DIR}/deps/vma/i
 add_subdirectory(deps/spirv)
 target_link_libraries(fresa PUBLIC spirv-cross-glsl spirv-cross-cpp spirv-cross-reflect spirv-cross-core)
 
+# ------------------------------------------------------------------------------
+
+# REFLECTION
+# ------------------------------------------------------------------------------
+# Next gen reflection (needs clang)
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    add_subdirectory(fresa/reflection/plugin)
+    if (TARGET reflection)
+        add_dependencies(fresa reflection)
+        target_compile_options(fresa PUBLIC -fplugin=$<TARGET_FILE:reflection>)
+    elseif (DEFINED REFLECTION_PLUGIN)
+        target_compile_options(fresa PUBLIC -fplugin=${REFLECTION_PLUGIN})
+    endif()
+else()
+    message(FATAL_ERROR "[ERROR] You are not using clang, the reflection system requires a clang plugin.")
+endif()
 # ------------------------------------------------------------------------------
 
 # RESOURCES
