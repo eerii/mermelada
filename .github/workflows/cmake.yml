@@ -34,6 +34,9 @@ jobs:
       run: |
            sudo apt update
            sudo apt install xorg-dev -y
+    
+    - name: Install Clang/LLVM 14
+      run: sudo apt install libclang-dev
 
     - name: Configure CMake
       env:
@@ -74,15 +77,13 @@ jobs:
       run: pip install jinja2
 
     - name: Install Clang/LLVM 15
-      run: |
-        brew install llvm@15
-        export LLVM_PATH=$(brew --prefix llvm@15)
-        echo "LLVM_PATH = ${LLVM_PATH}"
+      run: brew install llvm@15
 
     - name: Configure CMake
       env:
-        CC: "${LLVM_PATH}/bin/clang"
-        CXX: "${LLVM_PATH}/bin/clang++"
+        CC: /usr/local/opt/llvm/bin/clang
+        CXX: /usr/local/opt/llvm/bin/clang++
+        LLVM_PATH: /usr/local/opt/llvm/bin
       run: cmake -B ${{ github.workspace }}/build -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
 
     - name: Build
