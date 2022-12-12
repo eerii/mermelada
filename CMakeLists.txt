@@ -108,16 +108,19 @@ target_link_libraries(fresa PUBLIC spirv-cross-glsl spirv-cross-cpp spirv-cross-
 # REFLECTION
 # ------------------------------------------------------------------------------
 # Next gen reflection (needs clang)
-if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    add_subdirectory(fresa/reflection/plugin)
-    if (TARGET reflection)
-        add_dependencies(fresa reflection)
-        target_compile_options(fresa PUBLIC -fplugin=$<TARGET_FILE:reflection>)
-    elseif (DEFINED REFLECTION_PLUGIN)
-        target_compile_options(fresa PUBLIC -fplugin=${REFLECTION_PLUGIN})
+set(ENABLE_REFLECTION OFF CACHE BOOL "Enable reflection")
+if (ENABLE_REFLECTION)
+    if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+        add_subdirectory(fresa/reflection/plugin)
+        if (TARGET reflection)
+            add_dependencies(fresa reflection)
+            target_compile_options(fresa PUBLIC -fplugin=$<TARGET_FILE:reflection>)
+        elseif (DEFINED REFLECTION_PLUGIN)
+            target_compile_options(fresa PUBLIC -fplugin=${REFLECTION_PLUGIN})
+        endif()
+    else()
+        message(FATAL_ERROR "[ERROR] You are not using clang, the reflection system requires a clang plugin.")
     endif()
-else()
-    message(FATAL_ERROR "[ERROR] You are not using clang, the reflection system requires a clang plugin.")
 endif()
 # ------------------------------------------------------------------------------
 
