@@ -92,11 +92,10 @@ set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 add_subdirectory(deps/glfw)
 target_link_libraries(fresa PUBLIC glfw)
-# glad
-set(GLAD_SOURCES_DIR "${PROJECT_SOURCE_DIR}/deps/glad")
-add_subdirectory("${GLAD_SOURCES_DIR}/cmake" glad_cmake)
-glad_add_library(glad_vulkan LOADER LANGUAGE CXX API vulkan:core=1.1)
-target_link_libraries(fresa PUBLIC glad_vulkan)
+# volk
+add_subdirectory(deps/volk)
+target_link_libraries(fresa PRIVATE volk)
+target_include_directories(fresa PRIVATE "${PROJECT_SOURCE_DIR}/deps/volk")
 # vma
 target_include_directories(fresa SYSTEM PUBLIC "${PROJECT_SOURCE_DIR}/deps/vma/include")
 # spirv-cross
@@ -108,20 +107,20 @@ target_link_libraries(fresa PUBLIC spirv-cross-glsl spirv-cross-cpp spirv-cross-
 # REFLECTION
 # ------------------------------------------------------------------------------
 # Next gen reflection (needs clang)
-set(ENABLE_REFLECTION OFF CACHE BOOL "Enable reflection")
-if (ENABLE_REFLECTION)
-    if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-        add_subdirectory(fresa/reflection/plugin)
-        if (TARGET reflection)
-            add_dependencies(fresa reflection)
-            target_compile_options(fresa PUBLIC -fplugin=$<TARGET_FILE:reflection>)
-        elseif (DEFINED REFLECTION_PLUGIN)
-            target_compile_options(fresa PUBLIC -fplugin=${REFLECTION_PLUGIN})
-        endif()
-    else()
-        message(FATAL_ERROR "[ERROR] You are not using clang, the reflection system requires a clang plugin.")
-    endif()
-endif()
+# set(ENABLE_REFLECTION OFF CACHE BOOL "Enable reflection")
+# if (ENABLE_REFLECTION)
+#     if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+#         add_subdirectory(fresa/reflection/plugin)
+#         if (TARGET reflection)
+#             add_dependencies(fresa reflection)
+#             target_compile_options(fresa PUBLIC -fplugin=$<TARGET_FILE:reflection>)
+#         elseif (DEFINED REFLECTION_PLUGIN)
+#             target_compile_options(fresa PUBLIC -fplugin=${REFLECTION_PLUGIN})
+#         endif()
+#     else()
+#         message(FATAL_ERROR "[ERROR] You are not using clang, the reflection system requires a clang plugin.")
+#     endif()
+# endif()
 # ------------------------------------------------------------------------------
 
 # RESOURCES

@@ -27,9 +27,6 @@ jobs:
         vulkan-components: Vulkan-Headers, Vulkan-Loader
         vulkan-use-cache: true
 
-    - name: Requirements for GLAD
-      run: pip install jinja2
-
     - name: Requirements for GLFW (Linux)
       run: |
            sudo apt update
@@ -72,9 +69,6 @@ jobs:
         vulkan-query-version: 1.3.216.0
         vulkan-components: Vulkan-Headers, Vulkan-Loader
         vulkan-use-cache: true
-
-    - name: Requirements for GLAD
-      run: pip install jinja2
 
     - name: Install Clang/LLVM 15
       run: brew install llvm@15

@@ -1,7 +1,7 @@
 [submodule "fresa"]
 	path = fresa
 	url = https://github.com/josekoalas/fresa.git
-	branch = dev
+	branch = experimental
 [submodule "deps/fmt"]
 	path = deps/fmt
 	url = https://github.com/fmtlib/fmt
@@ -14,13 +14,12 @@
 [submodule "deps/glfw"]
 	path = deps/glfw
 	url = https://github.com/glfw/glfw.git
-[submodule "deps/glad"]
-	path = deps/glad
-	url = https://github.com/Dav1dde/glad.git
-	branch = glad2
 [submodule "deps/vma"]
 	path = deps/vma
 	url = https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator
 [submodule "deps/spirv"]
 	path = deps/spirv
 	url = https://github.com/KhronosGroup/SPIRV-Cross.git
+[submodule "deps/volk"]
+	path = deps/volk
+	url = https://github.com/zeux/volk.git
