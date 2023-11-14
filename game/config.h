@@ -15,7 +15,7 @@ namespace fresa
         #ifdef FRESA_DEBUG
         consteval str_view run_tests() const override { return ""; }
         consteval bool enable_assertions() const override { return true; }
-        consteval ui32 log_level() const override { return 0b0011111; }
+        consteval ui32 log_level() const override { return 0b0111111; }
         consteval bool hot_reload() const override { return true; }
         #endif
     } engine_config;
